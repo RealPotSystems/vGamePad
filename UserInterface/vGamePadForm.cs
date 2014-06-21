@@ -6,6 +6,9 @@ using System.Security.Permissions;
 
 namespace vGamePad
 {
+    /// <summary>
+    /// ゲームパッドボタンクラス
+    /// </summary>
     public class vButton
     {
         /// <summary>
@@ -34,17 +37,17 @@ namespace vGamePad
         public uint m_id { get; set; }
 
         /// <summary>
-        /// 
+        /// サウンドストリーム
         /// </summary>
         private System.IO.Stream m_pushSound { get; set; }
 
         /// <summary>
-        /// 
+        /// プレイヤーオブジェクト
         /// </summary>
         System.Media.SoundPlayer m_player = null;
 
         /// <summary>
-        /// 
+        /// 音を鳴らすかのフラグ
         /// </summary>
         public bool m_soundState { get; set; }
 
@@ -60,6 +63,11 @@ namespace vGamePad
             m_soundState = false;
         }
 
+        /// <summary>
+        /// ヒットテスト
+        /// </summary>
+        /// <param name="now">テスト対象座標</param>
+        /// <returns>ヒットした場合、trueを返す</returns>
         public bool hitTest(Point now)
         {
             if ((m_point.X - now.X) * (m_point.X - now.X) + (m_point.Y - now.Y) * (m_point.Y - now.Y) <= ((radius + 18) * (radius + 18)))
@@ -73,6 +81,10 @@ namespace vGamePad
             return false;
         }
 
+        /// <summary>
+        /// ボタンイメージの描画
+        /// </summary>
+        /// <param name="e">ペイントイベント</param>
         public void drawImage(PaintEventArgs e)
         {
             if (this.m_id == uint.MaxValue)
@@ -148,6 +160,17 @@ namespace vGamePad
         {
             m_point = m_home;
         }
+    }
+
+    /// <summary>
+    /// 連射ボタン
+    /// </summary>
+    public class vBarrageButton : vButton
+    {
+        /// <summary>
+        /// 連射モード時のボタン画像
+        /// </summary>
+        private Image m_image_Barrage;
     }
 
     public partial class vGamePadForm : Form
