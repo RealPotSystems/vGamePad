@@ -13,10 +13,25 @@
       </Enum>
     </NestedTypes>
     <TypeIdentifier>
-      <HashCode>ACAAgAAAACEAAQAEAABEhgAAAAAAIAAAAAAAACQAAAA=</HashCode>
+      <HashCode>ACAAgAAAACEAAQAEAAAEhAAAAAAAAAAAAAAAACAAAAA=</HashCode>
       <FileName>DeviceControl.cs</FileName>
     </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="joystick" />
+    </ShowAsAssociation>
     <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="vJoyInterfaceWrap.vJoy">
+    <Position X="4.5" Y="0.5" Width="4.75" />
+    <Compartments>
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Struct Name="vJoyInterfaceWrap.vJoy.JoystickState">
+        <TypeIdentifier />
+      </Struct>
+    </NestedTypes>
+    <TypeIdentifier />
   </Class>
   <Font Name="Meiryo UI" Size="9" />
 </ClassDiagram>

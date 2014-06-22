@@ -11,7 +11,7 @@ namespace vGamePad
         /// <summary>
         /// ＋字キーの状態
         /// </summary>
-        private enum Pov
+        public enum Pov
         {
             NORTH   = 0,    // ↑
             EAST    = 1,    // →
@@ -30,15 +30,22 @@ namespace vGamePad
         /// </summary>
         static private UInt32 rID = 1;
 
+        /// <summary>
+        /// 軸の最大値
+        /// </summary>
         private long m_nAxisMax = long.MaxValue;
+
+        /// <summary>
+        /// 軸の最小値
+        /// </summary>
         private long m_nAxisMin = long.MinValue;
 
         /// <summary>
         /// コンストラクタ
         /// </summary>
-        public DeviceControl( UInt32 n = 1 )
+        public DeviceControl( UInt32 id = 1 )
         {
-            rID = n;
+            rID = id;   // rIDをコンストラクタで変更は可能
         }
 
         /// <summary>
@@ -154,21 +161,8 @@ namespace vGamePad
         /// <param name="n">0:上 1:右 2:下 3:左</param>
         public void PushCross(uint n)    // 0 ~ 3
         {
-            switch (n)
-            {
-                case 0:
-                    PushUe();
-                    break;
-                case 1:
-                    PushMigi();
-                    break;
-                case 2:
-                    PushShita();
-                    break;
-                case 3:
-                    PushHidari();
-                    break;
-            }
+            joystick.SetDiscPov((Int32)n, rID, 1);
+            joystick.SetDiscPov((Int32)Pov.NEUTRAL, rID, 1);
         }
 
         /// <summary>
@@ -196,46 +190,6 @@ namespace vGamePad
             y = 100 - y;
             joystick.SetAxis((int)(m_nAxisMax * x) / 100, rID, usageX);
             joystick.SetAxis((int)(m_nAxisMax * y ) / 100, rID, usageY);
-        }
-
-        /// <summary>
-        /// ＋キーの↑ボタン押下
-        /// </summary>
-        public void PushUe()
-        {
-            joystick.SetDiscPov((Int32)Pov.NORTH, rID, 1);
-            // ここにスリープいるかな？
-            joystick.SetDiscPov((Int32)Pov.NEUTRAL, rID, 1);
-        }
-
-        /// <summary>
-        /// ＋キーの↓ボタン押下
-        /// </summary>
-        public void PushShita()
-        {
-            joystick.SetDiscPov((Int32)Pov.SOUTH, rID, 1);
-            // ここにスリープいるかな？
-            joystick.SetDiscPov((Int32)Pov.NEUTRAL, rID, 1);
-        }
-
-        /// <summary>
-        /// ＋キーの←ボタン押下
-        /// </summary>
-        public void PushHidari()
-        {
-            joystick.SetDiscPov((Int32)Pov.WEST, rID, 1);
-            // ここにスリープいるかな？
-            joystick.SetDiscPov((Int32)Pov.NEUTRAL, rID, 1);
-        }
-
-        /// <summary>
-        /// ＋キーの→ボタン押下
-        /// </summary>
-        public void PushMigi()
-        {
-            joystick.SetDiscPov((Int32)Pov.EAST, rID, 1);
-            // ここにスリープいるかな？
-            joystick.SetDiscPov((Int32)Pov.NEUTRAL, rID, 1);
         }
 
         /// <summary>
