@@ -8,19 +8,16 @@ namespace vGamePad
     /// </summary>
     public class DeviceControl : IDisposable
     {
-        public string versioninfo;
-        private const int DQX_BTN_BENRI = (2);
-
         /// <summary>
         /// ＋字キーの状態
         /// </summary>
         private enum Pov
         {
-            NORTH   = 0,
-            EAST    = 1,
-            SOUTH   = 2,
-            WEST    = 3,
-            NEUTRAL = -1,
+            NORTH   = 0,    // ↑
+            EAST    = 1,    // →
+            SOUTH   = 2,    // ↓
+            WEST    = 3,    // ←
+            NEUTRAL = -1,   // ニュートラル
         }
 
         /// <summary>
@@ -29,7 +26,7 @@ namespace vGamePad
         static private vJoy joystick = new vJoy();
 
         /// <summary>
-        /// デバイスIDは2固定
+        /// デバイスIDは1固定
         /// </summary>
         static private UInt32 rID = 1;
 
@@ -39,9 +36,9 @@ namespace vGamePad
         /// <summary>
         /// コンストラクタ
         /// </summary>
-        public DeviceControl()
+        public DeviceControl( UInt32 n = 1 )
         {
-            versioninfo = "";
+            rID = n;
         }
 
         /// <summary>
@@ -130,24 +127,31 @@ namespace vGamePad
 
             joystick.ResetVJD(rID);
 
-            //
-            versioninfo = joystick.GetvJoyManufacturerString()
-                + joystick.GetvJoyProductString()
-                + joystick.GetvJoySerialNumberString();
-
             return true;
         }
 
+        /// <summary>
+        /// ボタンON
+        /// </summary>
+        /// <param name="n">対象のボタンID</param>
         public void PushButton(uint n)   // 0 ~ 11
         {
             joystick.SetBtn(true, rID, n + 1);
         }
 
+        /// <summary>
+        /// ボタンOFF
+        /// </summary>
+        /// <param name="n">対象のボタンID</param>
         public void FreeButton(uint n)
         {
             joystick.SetBtn(false, rID, n + 1);
         }
 
+        /// <summary>
+        /// 方向キー
+        /// </summary>
+        /// <param name="n">0:上 1:右 2:下 3:左</param>
         public void PushCross(uint n)    // 0 ~ 3
         {
             switch (n)
@@ -167,6 +171,12 @@ namespace vGamePad
             }
         }
 
+        /// <summary>
+        /// アナログスティックの移動
+        /// </summary>
+        /// <param name="n">0:アナログスティック(左) 1:アナログスティック(右)</param>
+        /// <param name="x">上下</param>
+        /// <param name="y">左右</param>
         public void MoveStick(uint n, long x, long y)
         {
             HID_USAGES usageX = HID_USAGES.HID_USAGE_X;
@@ -186,13 +196,6 @@ namespace vGamePad
             y = 100 - y;
             joystick.SetAxis((int)(m_nAxisMax * x) / 100, rID, usageX);
             joystick.SetAxis((int)(m_nAxisMax * y ) / 100, rID, usageY);
-        }
-
-        public void PushBenri()
-        {
-            joystick.SetBtn(true, rID, DQX_BTN_BENRI);
-            // ここにスリープいるかな？
-            joystick.SetBtn(false, rID, DQX_BTN_BENRI);
         }
 
         /// <summary>
