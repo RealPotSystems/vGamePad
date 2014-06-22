@@ -56,11 +56,10 @@ namespace vGamePad
         /// </summary>
         public vButton()
         {
-            m_id = uint.MaxValue;
-            m_pushSound = Properties.Resources._Sound_01;
-            m_player = new SoundPlayer(m_pushSound);
-
-            m_soundState = false;
+            m_id = uint.MaxValue;                           // とりあえずあり得ない値にしておく
+            m_pushSound = Properties.Resources._Sound_01;   // 音の選択機能はなしで...
+            m_player = new SoundPlayer(m_pushSound);        // とりあえずボタン１つに１つのプレイヤーオブジェクト
+            m_soundState = false;                           // デフォルトは音を鳴らさない
         }
 
         /// <summary>
@@ -70,6 +69,7 @@ namespace vGamePad
         /// <returns>ヒットした場合、trueを返す</returns>
         public bool hitTest(Point now)
         {
+            // とりあえず中心座標からの距離で判断
             if ((m_point.X - now.X) * (m_point.X - now.X) + (m_point.Y - now.Y) * (m_point.Y - now.Y) <= ((radius + 18) * (radius + 18)))
             {
                 if (m_soundState)
@@ -98,6 +98,9 @@ namespace vGamePad
         }
     }
 
+    /// <summary>
+    /// アナログスティック
+    /// </summary>
     public class vStick : vButton
     {
         public const int scope = 50;
@@ -170,7 +173,22 @@ namespace vGamePad
         /// <summary>
         /// 連射モード時のボタン画像
         /// </summary>
-        private Image m_image_Barrage;
+        private Image m_image_Barrage { set; get; }
+
+        /// <summary>
+        /// 連射モードフラグ
+        /// </summary>
+        private bool m_bBarrageOn { set; get; }
+
+        /// <summary>
+        /// 仮想ゲームパッド
+        /// </summary>
+        protected DeviceControl m_devCon;
+
+        public vBarrageButton(ref DeviceControl devCon)
+        {
+            m_devCon = devCon;
+        }
     }
 
     public partial class vGamePadForm : Form
@@ -184,7 +202,7 @@ namespace vGamePad
         private const int WM_POINTERDOWN = 0x0246;
         private const int WM_POINTERUP = 0x0247;
 
-        private const int WM_CHANGEDISPLAY = 0x007E;                // v0.2.0.1
+        private const int WM_CHANGEDISPLAY = 0x007E;                // 画面回転に対応する
 
         private static int GET_X_LPARAM(IntPtr lParam)
         {
@@ -423,6 +441,9 @@ namespace vGamePad
                         if (m_stickArray[i].hitTest(pointer))
                         {
                             m_stickArray[i].m_id = GET_POINTERID_WPARAM(m.WParam);
+                            /*
+                             * m_stickArray[i].MoveStick();
+                             */
                             m_devCon.MoveStick(
                                 i,
                                 (long)m_stickArray[i].GetAxisX(),
@@ -437,6 +458,7 @@ namespace vGamePad
                         if (m_buttonArray[i].hitTest(pointer))
                         {
                             m_buttonArray[i].m_id = GET_POINTERID_WPARAM(m.WParam);
+                            /* m_buttonArray[i].PushButton();*/
                             // ボタンON
                             this.m_devCon.PushButton(i);
                             break;
@@ -449,6 +471,7 @@ namespace vGamePad
                         if (m_crossArray[i].hitTest(pointer))
                         {
                             m_crossArray[i].m_id = GET_POINTERID_WPARAM(m.WParam);
+                            /* m_crossArray[i].PushCross();*/
                             // ボタンON
                             this.m_devCon.PushCross(i);
                             break;

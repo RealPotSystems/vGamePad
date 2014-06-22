@@ -103,6 +103,16 @@ namespace vGamePad.Properties {
         /// <summary>
         ///   型 System.Drawing.Bitmap のローカライズされたリソースを検索します。
         /// </summary>
+        internal static System.Drawing.Bitmap _02_2 {
+            get {
+                object obj = ResourceManager.GetObject("_02_2", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   型 System.Drawing.Bitmap のローカライズされたリソースを検索します。
+        /// </summary>
         internal static System.Drawing.Bitmap _03_0 {
             get {
                 object obj = ResourceManager.GetObject("_03_0", resourceCulture);
