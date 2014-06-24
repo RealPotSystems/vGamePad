@@ -44,7 +44,7 @@ namespace vGamePad
         /// <summary>
         /// プレイヤーオブジェクト
         /// </summary>
-        System.Media.SoundPlayer m_player = null;
+        protected System.Media.SoundPlayer m_player = null;
 
         /// <summary>
         /// 音を鳴らすかのフラグ
@@ -85,7 +85,7 @@ namespace vGamePad
         /// ボタンイメージの描画
         /// </summary>
         /// <param name="e">ペイントイベント</param>
-        public void drawImage(PaintEventArgs e)
+        public virtual void drawImage(PaintEventArgs e)
         {
             if (this.m_id == uint.MaxValue)
             {
@@ -173,21 +173,132 @@ namespace vGamePad
         /// <summary>
         /// 連射モード時のボタン画像
         /// </summary>
-        private Image m_image_Barrage { set; get; }
+        public Image m_image_Barrage { set; get; }
 
         /// <summary>
         /// 連射モードフラグ
         /// </summary>
-        private bool m_bBarrageOn { set; get; }
+        public bool m_bBarrageOn { set; get; }
 
         /// <summary>
         /// 仮想ゲームパッド
         /// </summary>
         protected DeviceControl m_devCon;
 
-        public vBarrageButton(ref DeviceControl devCon)
+        /// <summary>
+        /// ボタンID
+        /// </summary>
+        protected uint m_buttonId;
+
+        /// <summary>
+        /// フォーム
+        /// </summary>
+        protected Form m_form;
+
+        /// <summary>
+        /// 連射タイマー
+        /// </summary>
+        protected Timer m_timer;
+
+        /// <summary>
+        /// コンストラクター
+        /// </summary>
+        /// <param name="devCon">vJoyオブジェクト</param>
+        /// <param name="form">メインフォーム</param>
+        /// <param name="id">ボタン識別ID</param>
+        public vBarrageButton(ref DeviceControl devCon, Form form, uint id)
         {
             m_devCon = devCon;
+            m_form = form;
+            m_buttonId = id;
+            m_timer = new Timer();
+        }
+
+        /// <summary>
+        /// タッチパネルボタンON処理
+        /// </summary>
+        /// <param name="now">座標</param>
+        /// <returns>true:ヒットした false:ヒットしなかった</returns>
+        public bool PointerDown(Point now)
+        {
+            bool bRet = base.hitTest(now);
+            if (bRet)
+            {
+                m_id = 1;
+                if (m_timer.Enabled)
+                {
+                    m_timer.Tick -= new EventHandler(OnTimerEvent);
+                    m_timer.Enabled = false;
+                    System.Diagnostics.Debug.WriteLine("-");
+                    m_bBarrageOn = false;
+                }
+                else
+                {
+                    m_timer.Interval = 2000; // 2秒
+                    m_timer.Tick += new EventHandler(OnTimerEvent);
+                    m_timer.Enabled = true;
+                }
+            }
+            return bRet;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="now"></param>
+        public void PointerUp(Point now)
+        {
+            bool bRet = base.hitTest(now);
+            if (bRet)
+            {
+                m_id = uint.MaxValue;
+                if (m_timer.Enabled && !m_bBarrageOn)
+                {
+                    m_timer.Tick -= new EventHandler(OnTimerEvent);
+                    m_timer.Enabled = false;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void OnTimerEvent(object sender, EventArgs e)
+        {
+            // 連射モードON
+            if (!m_bBarrageOn)
+            {
+                m_bBarrageOn = true;
+                m_form.Invalidate();
+                if (m_soundState)
+                {
+                    m_player.PlaySync();
+                    m_player.Play();
+
+                }
+            }
+            m_timer.Interval = 100; // 0.1秒
+            System.Diagnostics.Debug.WriteLine("!");
+            m_devCon.PushButton(m_id);
+            m_devCon.FreeButton(m_id);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="e"></param>
+        public override void drawImage(PaintEventArgs e)
+        {
+            if (m_bBarrageOn)
+            {
+                e.Graphics.DrawImage(m_image_Barrage, m_point.X - radius, m_point.Y - radius);
+            }
+            else
+            {
+                base.drawImage(e);
+            }
         }
     }
 
@@ -217,9 +328,10 @@ namespace vGamePad
             return (uint)wParam & 0xFFFF;
         }
 
-        private vButton[] m_buttonArray = new vButton[12];
+        private vButton[] m_buttonArray = new vButton[8];
         private vButton[] m_crossArray = new vButton[4];
         private vStick[] m_stickArray = new vStick[2];
+        private vBarrageButton[] m_barrageArray = new vBarrageButton[4];
         private vButton m_soundState;
         private vButton m_softKeyboard;
         private string m_cmdLine = null;
@@ -244,66 +356,85 @@ namespace vGamePad
             m_devCon = devCon;
             m_cmdLine = Environment.ExpandEnvironmentVariables("%ProgramFiles%") + "\\Common Files\\microsoft shared\\ink\\TabTip.exe";
 
+            //m_buttonArray[0] = new vButton();
+            //m_buttonArray[0].m_image_off = Properties.Resources._01_0;
+            //m_buttonArray[0].m_image_on = Properties.Resources._01_1;
+            //m_buttonArray[0].m_point = new Point(baseWidth - 100, 120);
+            m_barrageArray[0] = new vBarrageButton(ref devCon, this, 0);
+            m_barrageArray[0].m_image_off = Properties.Resources._01_0;
+            m_barrageArray[0].m_image_on = Properties.Resources._01_1;
+            m_barrageArray[0].m_image_Barrage = Properties.Resources._02_2;
+            m_barrageArray[0].m_point = new Point(baseWidth - 100, 120);
+
+            //m_buttonArray[1] = new vButton();
+            //m_buttonArray[1].m_image_off = Properties.Resources._02_0;
+            //m_buttonArray[1].m_image_on = Properties.Resources._02_1;
+            //m_buttonArray[1].m_point = new Point(baseWidth - 50, 170);
+            m_barrageArray[1] = new vBarrageButton(ref devCon, this, 1);
+            m_barrageArray[1].m_image_off = Properties.Resources._02_0;
+            m_barrageArray[1].m_image_on = Properties.Resources._02_1;
+            m_barrageArray[1].m_image_Barrage = Properties.Resources._02_2;
+            m_barrageArray[1].m_point = new Point(baseWidth - 50, 170);
+
+            //m_buttonArray[2] = new vButton();
+            //m_buttonArray[2].m_image_off = Properties.Resources._03_0;
+            //m_buttonArray[2].m_image_on = Properties.Resources._03_1;
+            //m_buttonArray[2].m_point = new Point(baseWidth - 100, 220);
+            m_barrageArray[2] = new vBarrageButton(ref devCon, this, 2);
+            m_barrageArray[2].m_image_off = Properties.Resources._03_0;
+            m_barrageArray[2].m_image_on = Properties.Resources._03_1;
+            m_barrageArray[2].m_image_Barrage = Properties.Resources._02_2;
+            m_barrageArray[2].m_point = new Point(baseWidth - 100, 220);
+
+            //m_buttonArray[3] = new vButton();
+            //m_buttonArray[3].m_image_off = Properties.Resources._04_0;
+            //m_buttonArray[3].m_image_on = Properties.Resources._04_1;
+            //m_buttonArray[3].m_point = new Point(baseWidth - 150, 170);
+            m_barrageArray[3] = new vBarrageButton(ref devCon, this, 3);
+            m_barrageArray[3].m_image_off = Properties.Resources._04_0;
+            m_barrageArray[3].m_image_on = Properties.Resources._04_1;
+            m_barrageArray[3].m_image_Barrage = Properties.Resources._02_2;
+            m_barrageArray[3].m_point = new Point(baseWidth - 150, 170);
 
             m_buttonArray[0] = new vButton();
-            m_buttonArray[0].m_image_off = Properties.Resources._01_0;
-            m_buttonArray[0].m_image_on = Properties.Resources._01_1;
-            m_buttonArray[0].m_point = new Point(baseWidth - 100, 120);
+            m_buttonArray[0].m_image_off = Properties.Resources._05_0;
+            m_buttonArray[0].m_image_on = Properties.Resources._05_1;
+            m_buttonArray[0].m_point = new Point(baseWidth - 150, 50);
 
             m_buttonArray[1] = new vButton();
-            m_buttonArray[1].m_image_off = Properties.Resources._02_0;
-            m_buttonArray[1].m_image_on = Properties.Resources._02_1;
-            m_buttonArray[1].m_point = new Point(baseWidth - 50, 170);
+            m_buttonArray[1].m_image_off = Properties.Resources._06_0;
+            m_buttonArray[1].m_image_on = Properties.Resources._06_1;
+            m_buttonArray[1].m_point = new Point(baseWidth - 80, 50);
 
             m_buttonArray[2] = new vButton();
-            m_buttonArray[2].m_image_off = Properties.Resources._03_0;
-            m_buttonArray[2].m_image_on = Properties.Resources._03_1;
-            m_buttonArray[2].m_point = new Point(baseWidth - 100, 220);
+            m_buttonArray[2].m_image_off = Properties.Resources._07_0;
+            m_buttonArray[2].m_image_on = Properties.Resources._07_1;
+            m_buttonArray[2].m_point = new Point(220, 50);
 
             m_buttonArray[3] = new vButton();
-            m_buttonArray[3].m_image_off = Properties.Resources._04_0;
-            m_buttonArray[3].m_image_on = Properties.Resources._04_1;
-            m_buttonArray[3].m_point = new Point(baseWidth - 150, 170);
+            m_buttonArray[3].m_image_off = Properties.Resources._08_0;
+            m_buttonArray[3].m_image_on = Properties.Resources._08_1;
+            m_buttonArray[3].m_point = new Point(baseWidth - 220, 50);
 
             m_buttonArray[4] = new vButton();
-            m_buttonArray[4].m_image_off = Properties.Resources._05_0;
-            m_buttonArray[4].m_image_on = Properties.Resources._05_1;
-            m_buttonArray[4].m_point = new Point(baseWidth - 150, 50);
+            m_buttonArray[4].m_image_off = Properties.Resources._09_0;
+            m_buttonArray[4].m_image_on = Properties.Resources._09_1;
+            m_buttonArray[4].m_point = new Point(-450, -50);
 
             m_buttonArray[5] = new vButton();
-            m_buttonArray[5].m_image_off = Properties.Resources._06_0;
-            m_buttonArray[5].m_image_on = Properties.Resources._06_1;
-            m_buttonArray[5].m_point = new Point(baseWidth - 80, 50);
+            m_buttonArray[5].m_image_off = Properties.Resources._10_0;
+            m_buttonArray[5].m_image_on = Properties.Resources._10_1;
+            m_buttonArray[5].m_point = new Point(210, 240);
 
             m_buttonArray[6] = new vButton();
-            m_buttonArray[6].m_image_off = Properties.Resources._07_0;
-            m_buttonArray[6].m_image_on = Properties.Resources._07_1;
-            m_buttonArray[6].m_point = new Point(220, 50);
+            m_buttonArray[6].m_image_off = Properties.Resources._11_0;
+            m_buttonArray[6].m_image_on = Properties.Resources._11_1;
+            m_buttonArray[6].m_point = new Point(-550, -50);
 
             m_buttonArray[7] = new vButton();
-            m_buttonArray[7].m_image_off = Properties.Resources._08_0;
-            m_buttonArray[7].m_image_on = Properties.Resources._08_1;
-            m_buttonArray[7].m_point = new Point(baseWidth - 220, 50);
-
-            m_buttonArray[8] = new vButton();
-            m_buttonArray[8].m_image_off = Properties.Resources._09_0;
-            m_buttonArray[8].m_image_on = Properties.Resources._09_1;
-            m_buttonArray[8].m_point = new Point(-450, -50);
-
-            m_buttonArray[9] = new vButton();
-            m_buttonArray[9].m_image_off = Properties.Resources._10_0;
-            m_buttonArray[9].m_image_on = Properties.Resources._10_1;
-            m_buttonArray[9].m_point = new Point(210, 240);
-
-            m_buttonArray[10] = new vButton();
-            m_buttonArray[10].m_image_off = Properties.Resources._11_0;
-            m_buttonArray[10].m_image_on = Properties.Resources._11_1;
-            m_buttonArray[10].m_point = new Point(-550, -50);
-
-            m_buttonArray[11] = new vButton();
-            m_buttonArray[11].m_image_off = Properties.Resources._12_0;
-            m_buttonArray[11].m_image_on = Properties.Resources._12_1;
-            m_buttonArray[11].m_point = new Point(baseWidth - 210, 240);
+            m_buttonArray[7].m_image_off = Properties.Resources._12_0;
+            m_buttonArray[7].m_image_on = Properties.Resources._12_1;
+            m_buttonArray[7].m_point = new Point(baseWidth - 210, 240);
 
             m_crossArray[0] = new vButton();
             m_crossArray[0].m_image_off = Properties.Resources.up_0;
@@ -451,7 +582,17 @@ namespace vGamePad
                             break;
                         }
                     }
-                    // 1～12のボタン判定
+                    // 1～4のボタン判定
+                    for (uint i = 0; i < m_barrageArray.Length; i++)
+                    {
+                        if(m_barrageArray[i].PointerDown(pointer))
+                        {
+                            m_barrageArray[i].m_id = GET_POINTERID_WPARAM(m.WParam);
+                            this.m_devCon.PushButton(i);
+                            break;
+                        }
+                    }
+                    // 5～12のボタン判定
                     for (uint i = 0; i < m_buttonArray.Length; i++)
                     {
                         // ヒットした場合、GET_POINTERID_WPARAMでポインターIDを保存する
@@ -460,12 +601,12 @@ namespace vGamePad
                             m_buttonArray[i].m_id = GET_POINTERID_WPARAM(m.WParam);
                             /* m_buttonArray[i].PushButton();*/
                             // ボタンON
-                            this.m_devCon.PushButton(i);
+                            this.m_devCon.PushButton(i+4);
                             break;
                         }
                     }
                     // ＋キーボタンの判定
-                    for (uint i = 0; i < 4; i++)
+                    for (uint i = 0; i < m_crossArray.Length; i++)
                     {
                         // ヒットした場合、GET_POINTERID_WPARAMでポインターIDを保存する
                         if (m_crossArray[i].hitTest(pointer))
@@ -495,11 +636,10 @@ namespace vGamePad
                         for (uint i = 0; i < m_stickArray.Length; i++)
                         {
                             m_stickArray[i].m_soundState = soundState;
-
                         }
-                        for (uint i = 0; i < m_buttonArray.Length; i++)
+                        for (uint i = 0; i < m_barrageArray.Length; i++ )
                         {
-                            m_buttonArray[i].m_soundState = soundState;
+                            m_barrageArray[i].m_soundState = soundState;
                         }
                         for (uint i = 0; i < m_crossArray.Length; i++)
                         {
@@ -541,7 +681,7 @@ namespace vGamePad
                     // ポインターIDを取得
                     uint id = GET_POINTERID_WPARAM(m.WParam);
                     // アナログスティックの判定
-                    for (uint i = 0; i < 2; i++)
+                    for (uint i = 0; i < m_stickArray.Length; i++)
                     {
                         if (m_stickArray[i].m_id == id)
                         {
@@ -556,18 +696,27 @@ namespace vGamePad
                     }
 
                     // 1～12のボタンIDをチェック
-                    for (uint i = 0; i < 12; i++)
+                    for (uint i = 0; i > m_barrageArray.Length; i++ )
+                    {
+                        if (m_barrageArray[i].m_id == id)
+                        {
+                            m_barrageArray[i].m_id = uint.MaxValue;
+                            this.m_devCon.FreeButton(i);
+                            break;
+                        }
+                    }
+                    for (uint i = 0; i < m_buttonArray.Length; i++)
                     {
                         if (m_buttonArray[i].m_id == id)
                         {
                             m_buttonArray[i].m_id = uint.MaxValue;
                             // ボタンOFF
-                            this.m_devCon.FreeButton(i);
+                            this.m_devCon.FreeButton(i + 4);
                             break;
                         }
                     }
                     // ＋キーボタンの判定
-                    for (uint i = 0; i < 4; i++)
+                    for (uint i = 0; i < m_crossArray.Length; i++)
                     {
                         // ヒットした場合、GET_POINTERIDでポインターIDを保存する
                         if (m_crossArray[i].m_id == id)
@@ -588,7 +737,7 @@ namespace vGamePad
                 case WM_POINTERUPDATE:
                     // ポインターIDを取得
                     id = GET_POINTERID_WPARAM(m.WParam);
-                    for (uint i = 0; i < 2; i++)
+                    for (uint i = 0; i < m_stickArray.Length; i++)
                     {
                         if (m_stickArray[i].m_id == id)
                         {
@@ -617,19 +766,23 @@ namespace vGamePad
             base.OnPaint(e);
 
             // 1～12のボタン表示
-            for (int i = 0; i < 12; i++)
+            for (int i = 0; i < m_barrageArray.Length; i++)
+            {
+                m_barrageArray[i].drawImage(e);
+            }
+            for (int i = 0; i < m_buttonArray.Length; i++)
             {
                 m_buttonArray[i].drawImage(e);
             }
 
             // ＋字キーの表示
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < m_crossArray.Length; i++)
             {
                 m_crossArray[i].drawImage(e);
             }
 
             // アナログスティックの表示
-            for (int i = 0; i < 2; i++)
+            for (int i = 0; i < m_stickArray.Length; i++)
             {
                 m_stickArray[i].drawImage(e);
             }
