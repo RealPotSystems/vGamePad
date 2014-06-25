@@ -83,6 +83,16 @@ namespace vGamePad.Properties {
         /// <summary>
         ///   型 System.Drawing.Bitmap のローカライズされたリソースを検索します。
         /// </summary>
+        internal static System.Drawing.Bitmap _01_2 {
+            get {
+                object obj = ResourceManager.GetObject("_01_2", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   型 System.Drawing.Bitmap のローカライズされたリソースを検索します。
+        /// </summary>
         internal static System.Drawing.Bitmap _02_0 {
             get {
                 object obj = ResourceManager.GetObject("_02_0", resourceCulture);
@@ -133,6 +143,16 @@ namespace vGamePad.Properties {
         /// <summary>
         ///   型 System.Drawing.Bitmap のローカライズされたリソースを検索します。
         /// </summary>
+        internal static System.Drawing.Bitmap _03_2 {
+            get {
+                object obj = ResourceManager.GetObject("_03_2", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   型 System.Drawing.Bitmap のローカライズされたリソースを検索します。
+        /// </summary>
         internal static System.Drawing.Bitmap _04_0 {
             get {
                 object obj = ResourceManager.GetObject("_04_0", resourceCulture);
@@ -146,6 +166,16 @@ namespace vGamePad.Properties {
         internal static System.Drawing.Bitmap _04_1 {
             get {
                 object obj = ResourceManager.GetObject("_04_1", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   型 System.Drawing.Bitmap のローカライズされたリソースを検索します。
+        /// </summary>
+        internal static System.Drawing.Bitmap _04_2 {
+            get {
+                object obj = ResourceManager.GetObject("_04_2", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

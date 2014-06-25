@@ -224,12 +224,10 @@ namespace vGamePad
             bool bRet = base.hitTest(now);
             if (bRet)
             {
-                m_id = 1;
                 if (m_timer.Enabled)
                 {
                     m_timer.Tick -= new EventHandler(OnTimerEvent);
                     m_timer.Enabled = false;
-                    System.Diagnostics.Debug.WriteLine("-");
                     m_bBarrageOn = false;
                 }
                 else
@@ -245,18 +243,12 @@ namespace vGamePad
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="now"></param>
-        public void PointerUp(Point now)
+        public void PointerUp()
         {
-            bool bRet = base.hitTest(now);
-            if (bRet)
+            if (m_timer.Enabled && !m_bBarrageOn)
             {
-                m_id = uint.MaxValue;
-                if (m_timer.Enabled && !m_bBarrageOn)
-                {
-                    m_timer.Tick -= new EventHandler(OnTimerEvent);
-                    m_timer.Enabled = false;
-                }
+                m_timer.Tick -= new EventHandler(OnTimerEvent);
+                m_timer.Enabled = false;
             }
         }
 
@@ -280,9 +272,8 @@ namespace vGamePad
                 }
             }
             m_timer.Interval = 100; // 0.1秒
-            System.Diagnostics.Debug.WriteLine("!");
-            m_devCon.PushButton(m_id);
-            m_devCon.FreeButton(m_id);
+            m_devCon.PushButton(m_buttonId);
+            m_devCon.FreeButton(m_buttonId);
         }
 
         /// <summary>
@@ -363,7 +354,7 @@ namespace vGamePad
             m_barrageArray[0] = new vBarrageButton(ref devCon, this, 0);
             m_barrageArray[0].m_image_off = Properties.Resources._01_0;
             m_barrageArray[0].m_image_on = Properties.Resources._01_1;
-            m_barrageArray[0].m_image_Barrage = Properties.Resources._02_2;
+            m_barrageArray[0].m_image_Barrage = Properties.Resources._01_2;
             m_barrageArray[0].m_point = new Point(baseWidth - 100, 120);
 
             //m_buttonArray[1] = new vButton();
@@ -383,7 +374,7 @@ namespace vGamePad
             m_barrageArray[2] = new vBarrageButton(ref devCon, this, 2);
             m_barrageArray[2].m_image_off = Properties.Resources._03_0;
             m_barrageArray[2].m_image_on = Properties.Resources._03_1;
-            m_barrageArray[2].m_image_Barrage = Properties.Resources._02_2;
+            m_barrageArray[2].m_image_Barrage = Properties.Resources._03_2;
             m_barrageArray[2].m_point = new Point(baseWidth - 100, 220);
 
             //m_buttonArray[3] = new vButton();
@@ -393,7 +384,7 @@ namespace vGamePad
             m_barrageArray[3] = new vBarrageButton(ref devCon, this, 3);
             m_barrageArray[3].m_image_off = Properties.Resources._04_0;
             m_barrageArray[3].m_image_on = Properties.Resources._04_1;
-            m_barrageArray[3].m_image_Barrage = Properties.Resources._02_2;
+            m_barrageArray[3].m_image_Barrage = Properties.Resources._04_2;
             m_barrageArray[3].m_point = new Point(baseWidth - 150, 170);
 
             m_buttonArray[0] = new vButton();
@@ -696,11 +687,12 @@ namespace vGamePad
                     }
 
                     // 1～12のボタンIDをチェック
-                    for (uint i = 0; i > m_barrageArray.Length; i++ )
+                    for (uint i = 0; i < m_barrageArray.Length; i++ )
                     {
                         if (m_barrageArray[i].m_id == id)
                         {
                             m_barrageArray[i].m_id = uint.MaxValue;
+                            m_barrageArray[i].PointerUp();
                             this.m_devCon.FreeButton(i);
                             break;
                         }
