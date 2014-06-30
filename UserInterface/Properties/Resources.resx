@@ -253,4 +253,10 @@
   <data name="_04_2" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\04_2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="DQX_0" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\DQX_0.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="DQX_1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\DQX_1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
 </root>

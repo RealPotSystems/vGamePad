@@ -3,6 +3,8 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.Media;
 using System.Security.Permissions;
+using System.Threading;
+using System.Runtime.InteropServices;
 
 namespace vGamePad
 {
@@ -198,7 +200,7 @@ namespace vGamePad
         /// <summary>
         /// 連射タイマー
         /// </summary>
-        protected Timer m_timer;
+        protected System.Windows.Forms.Timer m_timer;
 
         /// <summary>
         /// コンストラクター
@@ -211,7 +213,7 @@ namespace vGamePad
             m_devCon = devCon;
             m_form = form;
             m_buttonId = id;
-            m_timer = new Timer();
+            m_timer = new System.Windows.Forms.Timer();
         }
 
         /// <summary>
@@ -304,7 +306,7 @@ namespace vGamePad
         private const int WM_POINTERDOWN = 0x0246;
         private const int WM_POINTERUP = 0x0247;
 
-        private const int WM_CHANGEDISPLAY = 0x007E;                // 画面回転に対応する
+        private const int WM_DISPLAYCHANGE = 0x007E;                // 画面回転に対応する
 
         private static int GET_X_LPARAM(IntPtr lParam)
         {
@@ -325,6 +327,7 @@ namespace vGamePad
         private vBarrageButton[] m_barrageArray = new vBarrageButton[4];
         private vButton m_soundState;
         private vButton m_softKeyboard;
+        private vButton m_dqxMove;
         private string m_cmdLine = null;
 
         private DeviceControl m_devCon;
@@ -332,6 +335,8 @@ namespace vGamePad
         private Label Label1;
         private Button Button1;
         private Button Button2;
+
+        private System.Drawing.Drawing2D.GraphicsPath m_path;
 
         public vGamePadForm()
         {
@@ -347,133 +352,96 @@ namespace vGamePad
             m_devCon = devCon;
             m_cmdLine = Environment.ExpandEnvironmentVariables("%ProgramFiles%") + "\\Common Files\\microsoft shared\\ink\\TabTip.exe";
 
-            //m_buttonArray[0] = new vButton();
-            //m_buttonArray[0].m_image_off = Properties.Resources._01_0;
-            //m_buttonArray[0].m_image_on = Properties.Resources._01_1;
-            //m_buttonArray[0].m_point = new Point(baseWidth - 100, 120);
             m_barrageArray[0] = new vBarrageButton(ref devCon, this, 0);
             m_barrageArray[0].m_image_off = Properties.Resources._01_0;
             m_barrageArray[0].m_image_on = Properties.Resources._01_1;
             m_barrageArray[0].m_image_Barrage = Properties.Resources._01_2;
-            m_barrageArray[0].m_point = new Point(baseWidth - 100, 120);
 
-            //m_buttonArray[1] = new vButton();
-            //m_buttonArray[1].m_image_off = Properties.Resources._02_0;
-            //m_buttonArray[1].m_image_on = Properties.Resources._02_1;
-            //m_buttonArray[1].m_point = new Point(baseWidth - 50, 170);
             m_barrageArray[1] = new vBarrageButton(ref devCon, this, 1);
             m_barrageArray[1].m_image_off = Properties.Resources._02_0;
             m_barrageArray[1].m_image_on = Properties.Resources._02_1;
             m_barrageArray[1].m_image_Barrage = Properties.Resources._02_2;
-            m_barrageArray[1].m_point = new Point(baseWidth - 50, 170);
 
-            //m_buttonArray[2] = new vButton();
-            //m_buttonArray[2].m_image_off = Properties.Resources._03_0;
-            //m_buttonArray[2].m_image_on = Properties.Resources._03_1;
-            //m_buttonArray[2].m_point = new Point(baseWidth - 100, 220);
             m_barrageArray[2] = new vBarrageButton(ref devCon, this, 2);
             m_barrageArray[2].m_image_off = Properties.Resources._03_0;
             m_barrageArray[2].m_image_on = Properties.Resources._03_1;
             m_barrageArray[2].m_image_Barrage = Properties.Resources._03_2;
-            m_barrageArray[2].m_point = new Point(baseWidth - 100, 220);
 
-            //m_buttonArray[3] = new vButton();
-            //m_buttonArray[3].m_image_off = Properties.Resources._04_0;
-            //m_buttonArray[3].m_image_on = Properties.Resources._04_1;
-            //m_buttonArray[3].m_point = new Point(baseWidth - 150, 170);
             m_barrageArray[3] = new vBarrageButton(ref devCon, this, 3);
             m_barrageArray[3].m_image_off = Properties.Resources._04_0;
             m_barrageArray[3].m_image_on = Properties.Resources._04_1;
             m_barrageArray[3].m_image_Barrage = Properties.Resources._04_2;
-            m_barrageArray[3].m_point = new Point(baseWidth - 150, 170);
 
             m_buttonArray[0] = new vButton();
             m_buttonArray[0].m_image_off = Properties.Resources._05_0;
             m_buttonArray[0].m_image_on = Properties.Resources._05_1;
-            m_buttonArray[0].m_point = new Point(baseWidth - 150, 50);
 
             m_buttonArray[1] = new vButton();
             m_buttonArray[1].m_image_off = Properties.Resources._06_0;
             m_buttonArray[1].m_image_on = Properties.Resources._06_1;
-            m_buttonArray[1].m_point = new Point(baseWidth - 80, 50);
 
             m_buttonArray[2] = new vButton();
             m_buttonArray[2].m_image_off = Properties.Resources._07_0;
             m_buttonArray[2].m_image_on = Properties.Resources._07_1;
-            m_buttonArray[2].m_point = new Point(220, 50);
 
             m_buttonArray[3] = new vButton();
             m_buttonArray[3].m_image_off = Properties.Resources._08_0;
             m_buttonArray[3].m_image_on = Properties.Resources._08_1;
-            m_buttonArray[3].m_point = new Point(baseWidth - 220, 50);
 
             m_buttonArray[4] = new vButton();
             m_buttonArray[4].m_image_off = Properties.Resources._09_0;
             m_buttonArray[4].m_image_on = Properties.Resources._09_1;
-            m_buttonArray[4].m_point = new Point(-450, -50);
 
             m_buttonArray[5] = new vButton();
             m_buttonArray[5].m_image_off = Properties.Resources._10_0;
             m_buttonArray[5].m_image_on = Properties.Resources._10_1;
-            m_buttonArray[5].m_point = new Point(210, 240);
 
             m_buttonArray[6] = new vButton();
             m_buttonArray[6].m_image_off = Properties.Resources._11_0;
             m_buttonArray[6].m_image_on = Properties.Resources._11_1;
-            m_buttonArray[6].m_point = new Point(-550, -50);
 
             m_buttonArray[7] = new vButton();
             m_buttonArray[7].m_image_off = Properties.Resources._12_0;
             m_buttonArray[7].m_image_on = Properties.Resources._12_1;
-            m_buttonArray[7].m_point = new Point(baseWidth - 210, 240);
 
             m_crossArray[0] = new vButton();
             m_crossArray[0].m_image_off = Properties.Resources.up_0;
             m_crossArray[0].m_image_on = Properties.Resources.up_1;
-            m_crossArray[0].m_point = new Point(100, 100);
 
             m_crossArray[1] = new vButton();
             m_crossArray[1].m_image_off = Properties.Resources.right_0;
             m_crossArray[1].m_image_on = Properties.Resources.right_1;
-            m_crossArray[1].m_point = new Point(150, 150);
 
             m_crossArray[2] = new vButton();
             m_crossArray[2].m_image_off = Properties.Resources.down_0;
             m_crossArray[2].m_image_on = Properties.Resources.down_1;
-            m_crossArray[2].m_point = new Point(100, 200);
 
             m_crossArray[3] = new vButton();
             m_crossArray[3].m_image_off = Properties.Resources.left_0;
             m_crossArray[3].m_image_on = Properties.Resources.left_1;
-            m_crossArray[3].m_point = new Point(50, 150);
 
             m_stickArray[0] = new vStick();
-            //m_stickArray[0].m_image_off = Properties.Resources.stick_0;
-            //m_stickArray[0].m_image_on = Properties.Resources.stick_1;
             m_stickArray[0].m_image_off = Properties.Resources.stick_b_0;
             m_stickArray[0].m_image_on = Properties.Resources.stick_b_1;
-            m_stickArray[0].m_point = new Point(300, 150);
-            m_stickArray[0].m_home = new Point(300, 150);
 
             m_stickArray[1] = new vStick();
-            //m_stickArray[1].m_image_off = Properties.Resources.stick_0;
-            //m_stickArray[1].m_image_on = Properties.Resources.stick_1;
             m_stickArray[1].m_image_off = Properties.Resources.stick_b_0;
             m_stickArray[1].m_image_on = Properties.Resources.stick_b_1;
-            m_stickArray[1].m_point = new Point(baseWidth - 300, 150);
-            m_stickArray[1].m_home = new Point(baseWidth - 300, 150);
 
             m_soundState = new vButton();
             m_soundState.m_image_off = Properties.Resources.Sound_OFF;
             m_soundState.m_image_on = Properties.Resources.Sound_ON;
-            m_soundState.m_point = new Point(baseWidth / 2 + 40, 240);
             m_soundState.m_soundState = true;
 
             m_softKeyboard = new vButton();
             m_softKeyboard.m_image_off = Properties.Resources.Keyboard;
             m_softKeyboard.m_image_on = Properties.Resources.Keybord_ON;
-            m_softKeyboard.m_point = new Point(baseWidth / 2 - 40, 240);
             m_softKeyboard.m_soundState = true;
+
+            m_dqxMove = new vButton();
+            m_dqxMove.m_image_off = Properties.Resources.DQX_0;
+            m_dqxMove.m_image_on = Properties.Resources.DQX_1;
+            m_soundState.m_soundState = true;
 
             m_devCon.MoveStick(0, 50, 50);
             m_devCon.MoveStick(1, 50, 50);
@@ -481,7 +449,6 @@ namespace vGamePad
 
             this.Label1 = new System.Windows.Forms.Label();
             this.Label1.Name = "label1";
-            this.Label1.Location = new System.Drawing.Point(46, 2);
             this.Label1.Size = new System.Drawing.Size(300, 20);
             //自分自身のバージョン情報を取得する
             System.Diagnostics.FileVersionInfo ver =
@@ -489,33 +456,75 @@ namespace vGamePad
                 System.Reflection.Assembly.GetExecutingAssembly().Location);
             this.Label1.Text = ver.ProductName + "(" + ver.ProductVersion + ")";
             this.Label1.Font = new System.Drawing.Font("Segoe UI Mono", 12 /*, System.Drawing.FontStyle.Bold*/ );
-            this.Controls.Add(this.Label1);
 
             this.Button1 = new System.Windows.Forms.Button();
             this.Button1.Name = "button1";
-            this.Button1.Location = new System.Drawing.Point(2, 2);
             this.Button1.Size = new System.Drawing.Size(44, 22);
             this.Button1.Text = "";
-            this.Button1.BackColor = System.Drawing.Color.DarkGray;
-            this.Controls.Add(this.Button1);
+            this.Button1.BackColor = System.Drawing.Color.Red;
 
             this.Button2 = new System.Windows.Forms.Button();
             this.Button2.Name = "button2";
-            this.Button2.Location = new System.Drawing.Point(baseWidth - 2 - 22, 2);
             this.Button2.Size = new System.Drawing.Size(22, 22);
             this.Button2.Text = "";
             this.Button2.BackColor = System.Drawing.Color.Red;
-            this.Controls.Add(this.Button2);
 
             this.Button1.MouseDown += Button1_MouseDown;
             this.Button1.MouseMove += Button1_MouseMove;
             this.Button1.MouseUp += Button1_MouseUp;
             this.Button2.Click += Button2_Click;
+
+            m_path = new System.Drawing.Drawing2D.GraphicsPath();
+
+            m_path.FillMode = System.Drawing.Drawing2D.FillMode.Winding;
+            m_path.AddRectangle(new Rectangle(0, 0, 48, 26));
+            m_path.AddRectangle(new Rectangle(this.Width - 26, 0, 26, 26));
+            m_path.AddEllipse(new Rectangle(baseWidth - 100 - 33, 120 - 33, 64, 64));
+            m_path.AddEllipse(new Rectangle(baseWidth - 50 - 33, 170 - 33, 64, 64));
+            m_path.AddEllipse(new Rectangle(baseWidth - 100 - 33, 220 - 33, 64, 64));
+            m_path.AddEllipse(new Rectangle(baseWidth - 150 - 33, 170 - 33, 64, 64));
+            m_path.AddEllipse(new Rectangle(baseWidth - 150 - 33, 50 - 33, 64, 64));
+            m_path.AddEllipse(new Rectangle(baseWidth - 80 - 33, 50 - 33, 64, 64));
+            m_path.AddEllipse(new Rectangle(220 - 33, 50 - 33, 64, 64));
+            m_path.AddEllipse(new Rectangle(baseWidth - 220 - 33, 50 - 33, 64, 64));
+            m_path.AddEllipse(new Rectangle(210 - 33, 240 - 33, 64, 64));
+            m_path.AddEllipse(new Rectangle(baseWidth - 210 - 33, 240 - 33, 64, 64));
+            m_path.AddEllipse(new Rectangle(100 - 33, 100 - 33, 64, 64));
+            m_path.AddEllipse(new Rectangle(150 - 33, 150 - 33, 64, 64));
+            m_path.AddEllipse(new Rectangle(100 - 33, 200 - 33, 64, 64));
+            m_path.AddEllipse(new Rectangle(50 - 33, 150 - 33, 64, 64));
+            m_path.AddEllipse(new Rectangle(baseWidth / 2 - 40 - 33, 240 - 33, 64, 64));
+            m_path.AddEllipse(new Rectangle(baseWidth / 2 + 40 - 33, 240 - 33, 64, 64));
+
+            m_path.AddPie(300 - (32 + 50), 150 - (32 + 50), 32 * 2, 32 * 2, 180, 90);
+            m_path.AddPie(300 - (32 + 50), 150 + (50 - 32), 32 * 2, 32 * 2, 90, 90);
+            m_path.AddPie(300 + 50 - 32, 150 - (32 + 50), 32 * 2, 32 * 2, 270, 90);
+            m_path.AddPie(300 + 50 - 32, 150 + (50 - 32), 32 * 2, 32 * 2, 0, 90);
+            m_path.AddRectangle(new Rectangle(300 - (32 + 50) + 32, 150 - (32 + 50), (32 + 50) * 2 - 64, (32 + 50) * 2));
+            m_path.AddRectangle(new Rectangle(300 - (32 + 50), 150 - (32 + 50) + 32, (32 + 50) * 2, (32 + 50) * 2 - 64));
+
+            m_path.AddPie(baseWidth-300 - (32 + 50), 150 - (32 + 50), 32 * 2, 32 * 2, 180, 90);
+            m_path.AddPie(baseWidth-300 - (32 + 50), 150 + (50 - 32), 32 * 2, 32 * 2, 90, 90);
+            m_path.AddPie(baseWidth-300 + 50 - 32, 150 - (32 + 50), 32 * 2, 32 * 2, 270, 90);
+            m_path.AddPie(baseWidth-300 + 50 - 32, 150 + (50 - 32), 32 * 2, 32 * 2, 0, 90);
+            m_path.AddRectangle(new Rectangle(baseWidth - 300 - (32 + 50) + 32, 150 - (32 + 50), (32 + 50) * 2 - 64, (32 + 50) * 2));
+            m_path.AddRectangle(new Rectangle(baseWidth - 300 - (32 + 50), 150 - (32 + 50) + 32, (32 + 50) * 2, (32 + 50) * 2 - 64));
+
+            OnDisplayChange(Screen.PrimaryScreen.Bounds.Width, 0);
+
+            // this.Region = new Region(m_path);
+            this.Controls.Add(this.Label1);
+            this.Controls.Add(this.Button1);
+            this.Controls.Add(this.Button2);
         }
 
         private void Button2_Click(object sender, EventArgs e)
         {
-            this.Close();
+            DialogResult result = MessageBox.Show("仮想ゲームパッド(vGamePad)を終了しますか？", "vGamePadメッセージ", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
+            if (result == DialogResult.Yes)
+            {
+                this.Close();
+            }
         }
 
         private Point mousePoint;
@@ -526,6 +535,7 @@ namespace vGamePad
             {
                 mousePoint = new Point(e.X, e.Y);
                 this.BackColor = System.Drawing.Color.White;
+                //this.Region = null;
             }
         }
 
@@ -533,7 +543,6 @@ namespace vGamePad
         {
             if ((e.Button & MouseButtons.Left) == MouseButtons.Left)
             {
-                //this.Left += e.X - mousePoint.X;
                 this.Top += e.Y - mousePoint.Y;
             }
         }
@@ -542,9 +551,51 @@ namespace vGamePad
         {
             if ((e.Button & MouseButtons.Left) == MouseButtons.Left)
             {
+                if ( Screen.PrimaryScreen.Bounds.Bottom < this.Top + this.Height )
+                {
+                    this.Top = Screen.PrimaryScreen.Bounds.Bottom - this.Height;
+                }
                 mousePoint = new Point(e.X, e.Y);
                 this.BackColor = System.Drawing.Color.DarkGray;
+                //this.Region = new Region(m_path);
             }
+        }
+
+        protected void OnDisplayChange(int horizontal, int vertical)
+        {
+            this.Width = horizontal;
+            int baseWidth = this.ClientSize.Width; // 786
+            m_barrageArray[0].m_point = new Point(baseWidth - 100, 120);
+            m_barrageArray[1].m_point = new Point(baseWidth - 50, 170);
+            m_barrageArray[2].m_point = new Point(baseWidth - 100, 220);
+            m_barrageArray[3].m_point = new Point(baseWidth - 150, 170);
+
+            m_buttonArray[0].m_point = new Point(baseWidth - 150, 50);
+            m_buttonArray[1].m_point = new Point(baseWidth - 80, 50);
+            m_buttonArray[2].m_point = new Point(220, 50);
+            m_buttonArray[3].m_point = new Point(baseWidth - 220, 50);
+            m_buttonArray[4].m_point = new Point(-450, -50);
+            m_buttonArray[5].m_point = new Point(210, 240);
+            m_buttonArray[6].m_point = new Point(-550, -50);
+            m_buttonArray[7].m_point = new Point(baseWidth - 210, 240);
+
+            m_crossArray[0].m_point = new Point(100, 100);
+            m_crossArray[1].m_point = new Point(150, 150);
+            m_crossArray[2].m_point = new Point(100, 200);
+            m_crossArray[3].m_point = new Point(50, 150);
+
+            m_stickArray[0].m_point = new Point(300, 150);
+            m_stickArray[0].m_home = new Point(300, 150);
+            m_stickArray[1].m_point = new Point(baseWidth - 300, 150);
+            m_stickArray[1].m_home = new Point(baseWidth - 300, 150);
+
+            m_soundState.m_point = new Point(baseWidth / 2 + 40, 240);
+            m_softKeyboard.m_point = new Point(baseWidth / 2 - 40, 240);
+            m_dqxMove.m_point = new Point(baseWidth / 2, 50);
+
+            this.Label1.Location = new System.Drawing.Point(46, 2);
+            this.Button1.Location = new System.Drawing.Point(2, 2);
+            this.Button2.Location = new System.Drawing.Point(baseWidth - 2 - 22, 2);
         }
 
         [SecurityPermission(SecurityAction.Demand, Flags = SecurityPermissionFlag.UnmanagedCode)]
@@ -638,6 +689,7 @@ namespace vGamePad
                         }
                     }
 
+                    // キーボード起動
                     if (m_softKeyboard.hitTest(pointer))
                     {
                         m_softKeyboard.m_id = GET_POINTERID_WPARAM(m.WParam);
@@ -663,6 +715,14 @@ namespace vGamePad
                         // C:\Program Files\Common Files\microsoft shared\ink\TabTip.exe
                         hProc = System.Diagnostics.Process.Start(m_cmdLine);
                         hProc.Close();
+                    }
+
+                    // DQX移動調整ボタン
+                    if (m_dqxMove.hitTest(pointer))
+                    {
+                        m_dqxMove.m_id = GET_POINTERID_WPARAM(m.WParam);
+                        Thread thread = new Thread(new ThreadStart(SetDQXWindowPos));
+                        thread.Start();
                     }
 
                     this.Invalidate();
@@ -718,9 +778,16 @@ namespace vGamePad
                         }
                     }
 
+                    // キーボード起動
                     if (m_softKeyboard.m_id == id)
                     {
                         m_softKeyboard.m_id = uint.MaxValue;
+                    }
+
+                    // ドラクエ10画面移動結果
+                    if (m_dqxMove.m_id == id)
+                    {
+                        m_dqxMove.m_id = uint.MaxValue;
                     }
 
                     this.Invalidate();
@@ -744,10 +811,23 @@ namespace vGamePad
                     }
                     this.Invalidate();
                     break;
-                case WM_CHANGEDISPLAY:
+                case WM_DISPLAYCHANGE:
                     // 縦横の確認を行う
-                    //                    MessageBox.Show("回転発生 "+System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width.ToString());
                     // 画面リサイズに伴うボタン配置の見直し
+                    OnDisplayChange(GET_X_LPARAM(m.LParam), GET_Y_LPARAM(m.LParam));
+
+                    // ウィンドウ内に収まらない場合の確認
+                    // 基本的に左下の座標が確実に入るように設定する
+                    if (GET_Y_LPARAM(m.LParam) < this.Top + this.Height)
+                    {
+                        this.Top = GET_Y_LPARAM(m.LParam) - this.Height;
+                    }
+                    this.Invalidate();
+
+                    // 別スレッドを起動する
+                    //Thread thread = new Thread(new ThreadStart(ThreadFunction));
+                    //thread.Start();
+
                     break;
             }
             base.WndProc(ref m);
@@ -784,6 +864,9 @@ namespace vGamePad
 
             // キーボードON
             m_softKeyboard.drawImage(e);
+
+            // ドラクエ10 画面調整
+            m_dqxMove.drawImage(e);
         }
 
         protected override CreateParams CreateParams
@@ -796,6 +879,42 @@ namespace vGamePad
                     p.ExStyle = p.ExStyle | (WS_EX_NOACTIVATE);
                 }
                 return p;
+            }
+        }
+
+        [DllImport("user32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool SetWindowPos(IntPtr hWnd,
+            int hWndInsertAfter, int x, int y, int cx, int cy, int uFlags);
+        private const int SWP_NOSIZE = 0x0001;
+        private const int SWP_NOMOVE = 0x0002;
+        private const int SWP_SHOWWINDOW = 0x0040;
+
+        private const int HWND_TOP = 0;
+        private const int HWND_TOPMOST = -1;
+        private const int HWND_NOTOPMOST = -2;
+
+        static void SetDQXWindowPos()
+        {
+            
+            try
+            {
+                System.Diagnostics.Process[] ps = System.Diagnostics.Process.GetProcessesByName("DQXGame");   // ドラクエ10のプロセス名を指定する
+                if (ps.Length == 1)
+                {
+                    ps[0].WaitForInputIdle();
+                    SetWindowPos(
+                        ps[0].MainWindowHandle,
+                        HWND_TOP,
+                        System.Windows.Forms.Screen.PrimaryScreen.WorkingArea.Left,
+                        System.Windows.Forms.Screen.PrimaryScreen.WorkingArea.Top,
+                        0,
+                        0,
+                        SWP_NOSIZE | SWP_SHOWWINDOW);
+                }
+            }
+            catch
+            {
             }
         }
     }
