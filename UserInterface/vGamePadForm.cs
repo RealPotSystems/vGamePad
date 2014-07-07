@@ -333,10 +333,13 @@ namespace vGamePad
         private DeviceControl m_devCon;
 
         private Label Label1;
+        private Label Label_Test;
         private Button Button1;
         private Button Button2;
 
         private System.Drawing.Drawing2D.GraphicsPath m_path;
+
+        private Form m_InfotmationForm;
 
         public vGamePadForm()
         {
@@ -455,7 +458,7 @@ namespace vGamePad
                 System.Diagnostics.FileVersionInfo.GetVersionInfo(
                 System.Reflection.Assembly.GetExecutingAssembly().Location);
             this.Label1.Text = ver.ProductName + "(" + ver.ProductVersion + ")";
-            this.Label1.Font = new System.Drawing.Font("Segoe UI Mono", 12 /*, System.Drawing.FontStyle.Bold*/ );
+            this.Label1.Font = new System.Drawing.Font("Meiryo UI", 12 /*, System.Drawing.FontStyle.Bold*/ );
 
             this.Button1 = new System.Windows.Forms.Button();
             this.Button1.Name = "button1";
@@ -516,6 +519,23 @@ namespace vGamePad
             this.Controls.Add(this.Label1);
             this.Controls.Add(this.Button1);
             this.Controls.Add(this.Button2);
+
+            this.Label_Test = new Label();
+            this.Label_Test.Name = "test";
+            this.Label_Test.Size = new Size(46, 52);
+            this.Label_Test.Text = "\uE115";
+            this.Label_Test.Font = new Font("Segoe UI Symbol", 24);
+            this.Label_Test.Location = new Point(baseWidth / 2 + 96,216);
+            this.Label_Test.BorderStyle = BorderStyle.None;
+            this.Label_Test.TextAlign = ContentAlignment.MiddleCenter;
+            this.Label_Test.MouseClick += Label_Test_MouseClick;
+            this.Controls.Add(this.Label_Test);
+        }
+
+        void Label_Test_MouseClick(object sender, MouseEventArgs e)
+        {
+            m_InfotmationForm = new InformationForm();
+            m_InfotmationForm.Show();
         }
 
         private void Button2_Click(object sender, EventArgs e)
@@ -523,6 +543,10 @@ namespace vGamePad
             DialogResult result = MessageBox.Show("仮想ゲームパッド(vGamePad)を終了しますか？", "vGamePadメッセージ", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
             if (result == DialogResult.Yes)
             {
+                if (m_InfotmationForm != null)
+                {
+                    m_InfotmationForm.Close();
+                }
                 this.Close();
             }
         }

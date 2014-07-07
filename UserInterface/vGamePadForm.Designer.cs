@@ -43,7 +43,7 @@
             this.Name = "vGamePadForm";
             this.Opacity = 0.3D;
             this.ShowInTaskbar = false;
-            this.Text = "vGamePad(0.4.0.1)";
+            this.Text = "vGamePad";
             this.TopMost = true;
             this.ResumeLayout(false);
             this.BackColor = System.Drawing.Color.DarkGray;
