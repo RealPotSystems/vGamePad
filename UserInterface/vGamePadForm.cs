@@ -332,14 +332,13 @@ namespace vGamePad
 
         private DeviceControl m_devCon;
 
-        private Label Label1;
-        private Label Label_Test;
         private Button Button1;
         private Button Button2;
 
         private System.Drawing.Drawing2D.GraphicsPath m_path;
 
-        private Form m_InfotmationForm;
+        private Form m_InfotmationForm = null;
+        private Form m_ConfigForm = null;
 
         public vGamePadForm()
         {
@@ -449,17 +448,6 @@ namespace vGamePad
             m_devCon.MoveStick(0, 50, 50);
             m_devCon.MoveStick(1, 50, 50);
 
-
-            this.Label1 = new System.Windows.Forms.Label();
-            this.Label1.Name = "label1";
-            this.Label1.Size = new System.Drawing.Size(300, 20);
-            //自分自身のバージョン情報を取得する
-            System.Diagnostics.FileVersionInfo ver =
-                System.Diagnostics.FileVersionInfo.GetVersionInfo(
-                System.Reflection.Assembly.GetExecutingAssembly().Location);
-            this.Label1.Text = ver.ProductName + "(" + ver.ProductVersion + ")";
-            this.Label1.Font = new System.Drawing.Font("Meiryo UI", 12 /*, System.Drawing.FontStyle.Bold*/ );
-
             this.Button1 = new System.Windows.Forms.Button();
             this.Button1.Name = "button1";
             this.Button1.Size = new System.Drawing.Size(44, 22);
@@ -516,26 +504,11 @@ namespace vGamePad
             OnDisplayChange(Screen.PrimaryScreen.Bounds.Width, 0);
 
             // this.Region = new Region(m_path);
-            this.Controls.Add(this.Label1);
             this.Controls.Add(this.Button1);
             this.Controls.Add(this.Button2);
 
-            this.Label_Test = new Label();
-            this.Label_Test.Name = "test";
-            this.Label_Test.Size = new Size(46, 52);
-            this.Label_Test.Text = "\uE115";
-            this.Label_Test.Font = new Font("Segoe UI Symbol", 24);
-            this.Label_Test.Location = new Point(baseWidth / 2 + 96,216);
-            this.Label_Test.BorderStyle = BorderStyle.None;
-            this.Label_Test.TextAlign = ContentAlignment.MiddleCenter;
-            this.Label_Test.MouseClick += Label_Test_MouseClick;
-            this.Controls.Add(this.Label_Test);
-        }
-
-        void Label_Test_MouseClick(object sender, MouseEventArgs e)
-        {
-            m_InfotmationForm = new InformationForm();
-            m_InfotmationForm.Show();
+            m_ConfigForm = new ConfigrationForm();
+            m_ConfigForm.Show();
         }
 
         private void Button2_Click(object sender, EventArgs e)
@@ -543,6 +516,10 @@ namespace vGamePad
             DialogResult result = MessageBox.Show("仮想ゲームパッド(vGamePad)を終了しますか？", "vGamePadメッセージ", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
             if (result == DialogResult.Yes)
             {
+                if (m_ConfigForm != null)
+                {
+                    m_ConfigForm.Close();
+                }
                 if (m_InfotmationForm != null)
                 {
                     m_InfotmationForm.Close();
@@ -617,7 +594,6 @@ namespace vGamePad
             m_softKeyboard.m_point = new Point(baseWidth / 2 - 40, 240);
             m_dqxMove.m_point = new Point(baseWidth / 2, 50);
 
-            this.Label1.Location = new System.Drawing.Point(46, 2);
             this.Button1.Location = new System.Drawing.Point(2, 2);
             this.Button2.Location = new System.Drawing.Point(baseWidth - 2 - 22, 2);
         }
