@@ -5,6 +5,7 @@ using System.Media;
 using System.Security.Permissions;
 using System.Threading;
 using System.Runtime.InteropServices;
+using System.Drawing.Drawing2D;
 
 namespace vGamePad
 {
@@ -327,7 +328,7 @@ namespace vGamePad
         private vBarrageButton[] m_barrageArray = new vBarrageButton[4];
         private vButton m_soundState;
         private vButton m_softKeyboard;
-        private vButton m_dqxMove;
+        //private vButton m_dqxMove;
         private string m_cmdLine = null;
 
         private DeviceControl m_devCon;
@@ -335,10 +336,10 @@ namespace vGamePad
         private Button Button1;
         private Button Button2;
 
-        private System.Drawing.Drawing2D.GraphicsPath m_path;
+        private GraphicsPath m_path;
 
-        private Form m_InfotmationForm = null;
-        private Form m_ConfigForm = null;
+        private InformationForm m_InfotmationForm = null;
+        private ConfigrationForm m_ConfigForm = null;
 
         public vGamePadForm()
         {
@@ -440,10 +441,10 @@ namespace vGamePad
             m_softKeyboard.m_image_on = Properties.Resources.Keybord_ON;
             m_softKeyboard.m_soundState = true;
 
-            m_dqxMove = new vButton();
-            m_dqxMove.m_image_off = Properties.Resources.DQX_0;
-            m_dqxMove.m_image_on = Properties.Resources.DQX_1;
-            m_soundState.m_soundState = true;
+            //m_dqxMove = new vButton();
+            //m_dqxMove.m_image_off = Properties.Resources.DQX_0;
+            //m_dqxMove.m_image_on = Properties.Resources.DQX_1;
+            //m_dqxMove.m_soundState = true;
 
             m_devCon.MoveStick(0, 50, 50);
             m_devCon.MoveStick(1, 50, 50);
@@ -465,7 +466,7 @@ namespace vGamePad
             this.Button1.MouseUp += Button1_MouseUp;
             this.Button2.Click += Button2_Click;
 
-            m_path = new System.Drawing.Drawing2D.GraphicsPath();
+            m_path = new GraphicsPath();
 
             m_path.FillMode = System.Drawing.Drawing2D.FillMode.Winding;
             m_path.AddRectangle(new Rectangle(0, 0, 48, 26));
@@ -508,7 +509,12 @@ namespace vGamePad
             this.Controls.Add(this.Button2);
 
             m_ConfigForm = new ConfigrationForm();
+            m_ConfigForm.m_vGamePadForm = this;
             m_ConfigForm.Show();
+
+            m_InfotmationForm = new InformationForm();
+            m_InfotmationForm.m_vGamePadForm = this;
+            m_InfotmationForm.Show();
         }
 
         private void Button2_Click(object sender, EventArgs e)
@@ -592,10 +598,19 @@ namespace vGamePad
 
             m_soundState.m_point = new Point(baseWidth / 2 + 40, 240);
             m_softKeyboard.m_point = new Point(baseWidth / 2 - 40, 240);
-            m_dqxMove.m_point = new Point(baseWidth / 2, 50);
+            //m_dqxMove.m_point = new Point(baseWidth / 2, 50);
 
             this.Button1.Location = new System.Drawing.Point(2, 2);
             this.Button2.Location = new System.Drawing.Point(baseWidth - 2 - 22, 2);
+
+            if (m_ConfigForm != null)
+            {
+                m_ConfigForm.SetPostion(horizontal,vertical);
+            }
+            if (m_InfotmationForm != null)
+            {
+                m_InfotmationForm.SetPostion(horizontal, vertical);
+            }
         }
 
         [SecurityPermission(SecurityAction.Demand, Flags = SecurityPermissionFlag.UnmanagedCode)]
@@ -718,12 +733,12 @@ namespace vGamePad
                     }
 
                     // DQX移動調整ボタン
-                    if (m_dqxMove.hitTest(pointer))
-                    {
-                        m_dqxMove.m_id = GET_POINTERID_WPARAM(m.WParam);
-                        Thread thread = new Thread(new ThreadStart(SetDQXWindowPos));
-                        thread.Start();
-                    }
+                    //if (m_dqxMove.hitTest(pointer))
+                    //{
+                    //    m_dqxMove.m_id = GET_POINTERID_WPARAM(m.WParam);
+                    //    Thread thread = new Thread(new ThreadStart(SetDQXWindowPos));
+                    //    thread.Start();
+                    //}
 
                     this.Invalidate();
                     break;
@@ -785,10 +800,10 @@ namespace vGamePad
                     }
 
                     // ドラクエ10画面移動結果
-                    if (m_dqxMove.m_id == id)
-                    {
-                        m_dqxMove.m_id = uint.MaxValue;
-                    }
+                    //if (m_dqxMove.m_id == id)
+                    //{
+                    //    m_dqxMove.m_id = uint.MaxValue;
+                    //}
 
                     this.Invalidate();
                     break;
@@ -866,7 +881,7 @@ namespace vGamePad
             m_softKeyboard.drawImage(e);
 
             // ドラクエ10 画面調整
-            m_dqxMove.drawImage(e);
+            //m_dqxMove.drawImage(e);
         }
 
         protected override CreateParams CreateParams

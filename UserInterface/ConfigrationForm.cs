@@ -27,6 +27,8 @@ namespace vGamePad
         private bool m_battery = false;
         private bool m_clock = false;
 
+        public vGamePadForm m_vGamePadForm = null;
+
         /// <summary>
         /// コンストラクタ
         /// </summary>
@@ -39,12 +41,20 @@ namespace vGamePad
                 System.Diagnostics.FileVersionInfo.GetVersionInfo(
                 System.Reflection.Assembly.GetExecutingAssembly().Location);
             this.label8.Text = ver.ProductName + " version " + ver.ProductVersion + "\nCopyright © 2014 Real Pot Systems (TAKUBON). All right reserved.";
+
+            // バッテリーの有無でラベルのdisableにする
+            // バッテリーの有無
+            if ((SystemInformation.PowerStatus.BatteryChargeStatus & BatteryChargeStatus.NoSystemBattery) == BatteryChargeStatus.NoSystemBattery)
+            {
+                this._Battery.Enabled = false;
+                this.label2.Enabled = false;
+            }
             // パスを設定して、右上のボタンだけにする
             m_path = new GraphicsPath();
             m_path.FillMode = FillMode.Winding;
             m_path.AddRectangle(new Rectangle(this.Width - 26, 0, 26, 26));
             this.Region = new Region(m_path);
-            this.Location = SetPostion();
+            this.SetPostion(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.WorkingArea.Top);
             SetButtonText();
         }
 
@@ -52,39 +62,37 @@ namespace vGamePad
         /// 表示位置決定
         /// </summary>
         /// <returns>表示位置</returns>
-        public Point SetPostion()
+        public void SetPostion(int x, int y)
         {
             // 全体 - 幅
-            int x = Screen.PrimaryScreen.Bounds.Width - this.Width;
-            int y = Screen.PrimaryScreen.WorkingArea.Top;
-            return new Point(x, y);
+            this.Location = new Point(x - this.Width, Screen.PrimaryScreen.WorkingArea.Top);
         }
 
         public void SetButtonText()
         {
             if (m_region)
             {
-                this.label5.Text = "\uE0A2";
+                this._Region.Text = "\uE0A2";
             }
             else
             {
-                this.label5.Text = "\uE003";
+                this._Region.Text = "\uE003";
             }
             if (m_battery)
             {
-                this.label6.Text = "\uE0A2";
+                this._Battery.Text = "\uE0A2";
             }
             else
             {
-                this.label6.Text = "\uE003";
+                this._Battery.Text = "\uE003";
             }
             if (m_clock)
             {
-                this.label7.Text = "\uE0A2";
+                this.S.Text = "\uE0A2";
             }
             else
             {
-                this.label7.Text = "\uE003";
+                this.S.Text = "\uE003";
             }
 
 
@@ -106,15 +114,15 @@ namespace vGamePad
 
         private void label5_Click(object sender, EventArgs e)
         {
-            if ( m_region )
+            if (m_region)
             {
                 m_region = false;
-                this.label5.Text = "\uE003";
+                this._Region.Text = "\uE003";
             }
             else
             {
                 m_region = true;
-                this.label5.Text = "\uE0A2";
+                this._Region.Text = "\uE0A2";
             }
         }
 
@@ -123,12 +131,12 @@ namespace vGamePad
             if (m_battery)
             {
                 m_battery = false;
-                this.label6.Text = "\uE003";
+                this._Battery.Text = "\uE003";
             }
             else
             {
                 m_battery = true;
-                this.label6.Text = "\uE0A2";
+                this._Battery.Text = "\uE0A2";
             }
         }
 
@@ -137,12 +145,12 @@ namespace vGamePad
             if (m_clock)
             {
                 m_clock = false;
-                this.label7.Text = "\uE003";
+                this.S.Text = "\uE003";
             }
             else
             {
                 m_clock = true;
-                this.label7.Text = "\uE0A2";
+                this.S.Text = "\uE0A2";
             }
         }
     }

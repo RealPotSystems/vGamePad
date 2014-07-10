@@ -35,9 +35,9 @@
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.label8 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
-            this.label7 = new System.Windows.Forms.Label();
+            this._Region = new System.Windows.Forms.Label();
+            this._Battery = new System.Windows.Forms.Label();
+            this.S = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -72,7 +72,7 @@
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(489, 26);
             this.label2.TabIndex = 4;
-            this.label2.Text = "バッテリー残量を推定プレイ時間で表示する（未実装）";
+            this.label2.Text = "バッテリー残量を推定プレイ時間で表示する（実装中）";
             // 
             // label3
             // 
@@ -117,47 +117,47 @@
             this.label4.TabIndex = 8;
             this.label4.Text = "vGamePad 環境設定画面";
             // 
-            // label5
+            // _Region
             // 
-            this.label5.AutoSize = true;
-            this.label5.Font = new System.Drawing.Font("Segoe UI Symbol", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(12, 96);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(22, 30);
-            this.label5.TabIndex = 9;
-            this.label5.Text = "_";
-            this.label5.Click += new System.EventHandler(this.label5_Click);
+            this._Region.AutoSize = true;
+            this._Region.Font = new System.Drawing.Font("Segoe UI Symbol", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this._Region.Location = new System.Drawing.Point(12, 96);
+            this._Region.Name = "_Region";
+            this._Region.Size = new System.Drawing.Size(22, 30);
+            this._Region.TabIndex = 9;
+            this._Region.Text = "_";
+            this._Region.Click += new System.EventHandler(this.label5_Click);
             // 
-            // label6
+            // _Battery
             // 
-            this.label6.AutoSize = true;
-            this.label6.Font = new System.Drawing.Font("Segoe UI Symbol", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label6.Location = new System.Drawing.Point(12, 145);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(22, 30);
-            this.label6.TabIndex = 10;
-            this.label6.Text = "_";
-            this.label6.Click += new System.EventHandler(this.label6_Click);
+            this._Battery.AutoSize = true;
+            this._Battery.Font = new System.Drawing.Font("Segoe UI Symbol", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this._Battery.Location = new System.Drawing.Point(12, 145);
+            this._Battery.Name = "_Battery";
+            this._Battery.Size = new System.Drawing.Size(22, 30);
+            this._Battery.TabIndex = 10;
+            this._Battery.Text = "_";
+            this._Battery.Click += new System.EventHandler(this.label6_Click);
             // 
-            // label7
+            // S
             // 
-            this.label7.AutoSize = true;
-            this.label7.Font = new System.Drawing.Font("Segoe UI Symbol", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label7.Location = new System.Drawing.Point(12, 194);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(22, 30);
-            this.label7.TabIndex = 11;
-            this.label7.Text = "_";
-            this.label7.Click += new System.EventHandler(this.label7_Click);
+            this.S.AutoSize = true;
+            this.S.Font = new System.Drawing.Font("Segoe UI Symbol", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.S.Location = new System.Drawing.Point(12, 194);
+            this.S.Name = "S";
+            this.S.Size = new System.Drawing.Size(22, 30);
+            this.S.TabIndex = 11;
+            this.S.Text = "_";
+            this.S.Click += new System.EventHandler(this.label7_Click);
             // 
             // ConfigrationForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(654, 330);
-            this.Controls.Add(this.label7);
-            this.Controls.Add(this.label6);
-            this.Controls.Add(this.label5);
+            this.Controls.Add(this.S);
+            this.Controls.Add(this._Battery);
+            this.Controls.Add(this._Region);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.label3);
@@ -192,9 +192,9 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Label _Region;
+        private System.Windows.Forms.Label _Battery;
+        private System.Windows.Forms.Label S;
         private System.Windows.Forms.Label label8;
     }
 }
