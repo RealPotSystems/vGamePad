@@ -23,12 +23,6 @@ namespace vGamePad
         /// </summary>
         private GraphicsPath m_path = null;
 
-        private bool m_region = false;
-        private bool m_battery = false;
-        private bool m_clock = false;
-
-        public vGamePadForm m_vGamePadForm = null;
-
         /// <summary>
         /// コンストラクタ
         /// </summary>
@@ -70,7 +64,7 @@ namespace vGamePad
 
         public void SetButtonText()
         {
-            if (m_region)
+            if (Properties.Settings.Default.Skeleton)
             {
                 this._Region.Text = "\uE0A2";
             }
@@ -78,7 +72,7 @@ namespace vGamePad
             {
                 this._Region.Text = "\uE003";
             }
-            if (m_battery)
+            if (Properties.Settings.Default.Battery)
             {
                 this._Battery.Text = "\uE0A2";
             }
@@ -86,7 +80,7 @@ namespace vGamePad
             {
                 this._Battery.Text = "\uE003";
             }
-            if (m_clock)
+            if (Properties.Settings.Default.AstClock)
             {
                 this.S.Text = "\uE0A2";
             }
@@ -114,43 +108,43 @@ namespace vGamePad
 
         private void label5_Click(object sender, EventArgs e)
         {
-            if (m_region)
+            if (Properties.Settings.Default.Skeleton)
             {
-                m_region = false;
                 this._Region.Text = "\uE003";
+                Properties.Settings.Default.Skeleton = false;
             }
             else
             {
-                m_region = true;
                 this._Region.Text = "\uE0A2";
+                Properties.Settings.Default.Skeleton = true;
             }
         }
 
         private void label6_Click(object sender, EventArgs e)
         {
-            if (m_battery)
+            if (Properties.Settings.Default.Battery)
             {
-                m_battery = false;
                 this._Battery.Text = "\uE003";
+                Properties.Settings.Default.Battery = false;
             }
             else
             {
-                m_battery = true;
                 this._Battery.Text = "\uE0A2";
+                Properties.Settings.Default.Battery = true;
             }
         }
 
         private void label7_Click(object sender, EventArgs e)
         {
-            if (m_clock)
+            if (Properties.Settings.Default.AstClock)
             {
-                m_clock = false;
                 this.S.Text = "\uE003";
+                Properties.Settings.Default.AstClock = false;
             }
             else
             {
-                m_clock = true;
                 this.S.Text = "\uE0A2";
+                Properties.Settings.Default.AstClock = true;
             }
         }
     }

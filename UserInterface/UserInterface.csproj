@@ -58,6 +58,7 @@
     <Compile Include="InformationForm.Designer.cs">
       <DependentUpon>InformationForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Settings.cs" />
     <Compile Include="vGamePadForm.cs">
       <SubType>Form</SubType>
     </Compile>

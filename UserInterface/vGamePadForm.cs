@@ -298,6 +298,8 @@ namespace vGamePad
 
     public partial class vGamePadForm : Form
     {
+        public static vGamePadForm _Form = null;
+
         private const int WS_EX_NOACTIVATE = 0x8000000;
         private const int WM_MOUSEMOVE = 0x0200;
         private const int WM_LBUTTONDOWN = 0x0201;
@@ -466,55 +468,19 @@ namespace vGamePad
             this.Button1.MouseUp += Button1_MouseUp;
             this.Button2.Click += Button2_Click;
 
-            m_path = new GraphicsPath();
-
-            m_path.FillMode = System.Drawing.Drawing2D.FillMode.Winding;
-            m_path.AddRectangle(new Rectangle(0, 0, 48, 26));
-            m_path.AddRectangle(new Rectangle(this.Width - 26, 0, 26, 26));
-            m_path.AddEllipse(new Rectangle(baseWidth - 100 - 33, 120 - 33, 64, 64));
-            m_path.AddEllipse(new Rectangle(baseWidth - 50 - 33, 170 - 33, 64, 64));
-            m_path.AddEllipse(new Rectangle(baseWidth - 100 - 33, 220 - 33, 64, 64));
-            m_path.AddEllipse(new Rectangle(baseWidth - 150 - 33, 170 - 33, 64, 64));
-            m_path.AddEllipse(new Rectangle(baseWidth - 150 - 33, 50 - 33, 64, 64));
-            m_path.AddEllipse(new Rectangle(baseWidth - 80 - 33, 50 - 33, 64, 64));
-            m_path.AddEllipse(new Rectangle(220 - 33, 50 - 33, 64, 64));
-            m_path.AddEllipse(new Rectangle(baseWidth - 220 - 33, 50 - 33, 64, 64));
-            m_path.AddEllipse(new Rectangle(210 - 33, 240 - 33, 64, 64));
-            m_path.AddEllipse(new Rectangle(baseWidth - 210 - 33, 240 - 33, 64, 64));
-            m_path.AddEllipse(new Rectangle(100 - 33, 100 - 33, 64, 64));
-            m_path.AddEllipse(new Rectangle(150 - 33, 150 - 33, 64, 64));
-            m_path.AddEllipse(new Rectangle(100 - 33, 200 - 33, 64, 64));
-            m_path.AddEllipse(new Rectangle(50 - 33, 150 - 33, 64, 64));
-            m_path.AddEllipse(new Rectangle(baseWidth / 2 - 40 - 33, 240 - 33, 64, 64));
-            m_path.AddEllipse(new Rectangle(baseWidth / 2 + 40 - 33, 240 - 33, 64, 64));
-
-            m_path.AddPie(300 - (32 + 50), 150 - (32 + 50), 32 * 2, 32 * 2, 180, 90);
-            m_path.AddPie(300 - (32 + 50), 150 + (50 - 32), 32 * 2, 32 * 2, 90, 90);
-            m_path.AddPie(300 + 50 - 32, 150 - (32 + 50), 32 * 2, 32 * 2, 270, 90);
-            m_path.AddPie(300 + 50 - 32, 150 + (50 - 32), 32 * 2, 32 * 2, 0, 90);
-            m_path.AddRectangle(new Rectangle(300 - (32 + 50) + 32, 150 - (32 + 50), (32 + 50) * 2 - 64, (32 + 50) * 2));
-            m_path.AddRectangle(new Rectangle(300 - (32 + 50), 150 - (32 + 50) + 32, (32 + 50) * 2, (32 + 50) * 2 - 64));
-
-            m_path.AddPie(baseWidth-300 - (32 + 50), 150 - (32 + 50), 32 * 2, 32 * 2, 180, 90);
-            m_path.AddPie(baseWidth-300 - (32 + 50), 150 + (50 - 32), 32 * 2, 32 * 2, 90, 90);
-            m_path.AddPie(baseWidth-300 + 50 - 32, 150 - (32 + 50), 32 * 2, 32 * 2, 270, 90);
-            m_path.AddPie(baseWidth-300 + 50 - 32, 150 + (50 - 32), 32 * 2, 32 * 2, 0, 90);
-            m_path.AddRectangle(new Rectangle(baseWidth - 300 - (32 + 50) + 32, 150 - (32 + 50), (32 + 50) * 2 - 64, (32 + 50) * 2));
-            m_path.AddRectangle(new Rectangle(baseWidth - 300 - (32 + 50), 150 - (32 + 50) + 32, (32 + 50) * 2, (32 + 50) * 2 - 64));
-
             OnDisplayChange(Screen.PrimaryScreen.Bounds.Width, 0);
 
-            // this.Region = new Region(m_path);
+            SetRegion(Properties.Settings.Default.Skeleton);
+
             this.Controls.Add(this.Button1);
             this.Controls.Add(this.Button2);
 
             m_ConfigForm = new ConfigrationForm();
-            m_ConfigForm.m_vGamePadForm = this;
             m_ConfigForm.Show();
 
             m_InfotmationForm = new InformationForm();
-            m_InfotmationForm.m_vGamePadForm = this;
-            m_InfotmationForm.Show();
+
+            _Form = this;
         }
 
         private void Button2_Click(object sender, EventArgs e)
@@ -542,7 +508,10 @@ namespace vGamePad
             {
                 mousePoint = new Point(e.X, e.Y);
                 this.BackColor = System.Drawing.Color.White;
-                //this.Region = null;
+                if ( Properties.Settings.Default.Skeleton )
+                {
+                    this.Region = null;
+                }
             }
         }
 
@@ -564,7 +533,10 @@ namespace vGamePad
                 }
                 mousePoint = new Point(e.X, e.Y);
                 this.BackColor = System.Drawing.Color.DarkGray;
-                //this.Region = new Region(m_path);
+                if (Properties.Settings.Default.Skeleton)
+                {
+                    this.Region = new Region(m_path);
+                }
             }
         }
 
@@ -611,6 +583,42 @@ namespace vGamePad
             {
                 m_InfotmationForm.SetPostion(horizontal, vertical);
             }
+
+            m_path = new GraphicsPath();
+
+            m_path.FillMode = System.Drawing.Drawing2D.FillMode.Winding;
+            m_path.AddRectangle(new Rectangle(0, 0, 48, 26));
+            m_path.AddRectangle(new Rectangle(this.Width - 26, 0, 26, 26));
+            m_path.AddEllipse(new Rectangle(baseWidth - 100 - 33, 120 - 33, 64, 64));
+            m_path.AddEllipse(new Rectangle(baseWidth - 50 - 33, 170 - 33, 64, 64));
+            m_path.AddEllipse(new Rectangle(baseWidth - 100 - 33, 220 - 33, 64, 64));
+            m_path.AddEllipse(new Rectangle(baseWidth - 150 - 33, 170 - 33, 64, 64));
+            m_path.AddEllipse(new Rectangle(baseWidth - 150 - 33, 50 - 33, 64, 64));
+            m_path.AddEllipse(new Rectangle(baseWidth - 80 - 33, 50 - 33, 64, 64));
+            m_path.AddEllipse(new Rectangle(220 - 33, 50 - 33, 64, 64));
+            m_path.AddEllipse(new Rectangle(baseWidth - 220 - 33, 50 - 33, 64, 64));
+            m_path.AddEllipse(new Rectangle(210 - 33, 240 - 33, 64, 64));
+            m_path.AddEllipse(new Rectangle(baseWidth - 210 - 33, 240 - 33, 64, 64));
+            m_path.AddEllipse(new Rectangle(100 - 33, 100 - 33, 64, 64));
+            m_path.AddEllipse(new Rectangle(150 - 33, 150 - 33, 64, 64));
+            m_path.AddEllipse(new Rectangle(100 - 33, 200 - 33, 64, 64));
+            m_path.AddEllipse(new Rectangle(50 - 33, 150 - 33, 64, 64));
+            m_path.AddEllipse(new Rectangle(baseWidth / 2 - 40 - 33, 240 - 33, 64, 64));
+            m_path.AddEllipse(new Rectangle(baseWidth / 2 + 40 - 33, 240 - 33, 64, 64));
+
+            m_path.AddPie(300 - (32 + 50), 150 - (32 + 50), 32 * 2, 32 * 2, 180, 90);
+            m_path.AddPie(300 - (32 + 50), 150 + (50 - 32), 32 * 2, 32 * 2, 90, 90);
+            m_path.AddPie(300 + 50 - 32, 150 - (32 + 50), 32 * 2, 32 * 2, 270, 90);
+            m_path.AddPie(300 + 50 - 32, 150 + (50 - 32), 32 * 2, 32 * 2, 0, 90);
+            m_path.AddRectangle(new Rectangle(300 - (32 + 50) + 32, 150 - (32 + 50), (32 + 50) * 2 - 64, (32 + 50) * 2));
+            m_path.AddRectangle(new Rectangle(300 - (32 + 50), 150 - (32 + 50) + 32, (32 + 50) * 2, (32 + 50) * 2 - 64));
+
+            m_path.AddPie(baseWidth - 300 - (32 + 50), 150 - (32 + 50), 32 * 2, 32 * 2, 180, 90);
+            m_path.AddPie(baseWidth - 300 - (32 + 50), 150 + (50 - 32), 32 * 2, 32 * 2, 90, 90);
+            m_path.AddPie(baseWidth - 300 + 50 - 32, 150 - (32 + 50), 32 * 2, 32 * 2, 270, 90);
+            m_path.AddPie(baseWidth - 300 + 50 - 32, 150 + (50 - 32), 32 * 2, 32 * 2, 0, 90);
+            m_path.AddRectangle(new Rectangle(baseWidth - 300 - (32 + 50) + 32, 150 - (32 + 50), (32 + 50) * 2 - 64, (32 + 50) * 2));
+            m_path.AddRectangle(new Rectangle(baseWidth - 300 - (32 + 50), 150 - (32 + 50) + 32, (32 + 50) * 2, (32 + 50) * 2 - 64));
         }
 
         [SecurityPermission(SecurityAction.Demand, Flags = SecurityPermissionFlag.UnmanagedCode)]
@@ -830,7 +838,10 @@ namespace vGamePad
                     // 縦横の確認を行う
                     // 画面リサイズに伴うボタン配置の見直し
                     OnDisplayChange(GET_X_LPARAM(m.LParam), GET_Y_LPARAM(m.LParam));
-
+                    if ( Properties.Settings.Default.Skeleton )
+                    {
+                        this.Region = new Region(this.m_path);
+                    }
                     // ウィンドウ内に収まらない場合の確認
                     // 基本的に左下の座標が確実に入るように設定する
                     if (GET_Y_LPARAM(m.LParam) < this.Top + this.Height)
@@ -838,11 +849,6 @@ namespace vGamePad
                         this.Top = GET_Y_LPARAM(m.LParam) - this.Height;
                     }
                     this.Invalidate();
-
-                    // 別スレッドを起動する
-                    //Thread thread = new Thread(new ThreadStart(ThreadFunction));
-                    //thread.Start();
-
                     break;
             }
             base.WndProc(ref m);
@@ -897,6 +903,29 @@ namespace vGamePad
             }
         }
 
+        public void SetRegion(bool value)
+        {
+            if (value)
+            {
+                this.Region = new Region(m_path);
+            }
+            else
+            {
+                this.Region = null;
+            }
+        }
+
+        static public void ChangeSetting(string SettingName, bool value)
+        {
+            if (_Form != null)
+            {
+                if ( SettingName == "Skeleton" )
+                {
+                    _Form.SetRegion(value);
+                }
+            }
+        }
+
         [DllImport("user32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool SetWindowPos(IntPtr hWnd,
@@ -909,7 +938,7 @@ namespace vGamePad
         private const int HWND_TOPMOST = -1;
         private const int HWND_NOTOPMOST = -2;
 
-        static void SetDQXWindowPos()
+        static public void SetDQXWindowPos()
         {
             
             try
