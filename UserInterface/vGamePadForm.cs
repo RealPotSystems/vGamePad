@@ -698,11 +698,15 @@ namespace vGamePad
                             m_soundState.m_id = 1;
                             soundState = true;
                         }
+                        for (uint i = 0; i < m_buttonArray.Length; i++)
+                        {
+                            m_buttonArray[i].m_soundState = soundState;
+                        }
                         for (uint i = 0; i < m_stickArray.Length; i++)
                         {
                             m_stickArray[i].m_soundState = soundState;
                         }
-                        for (uint i = 0; i < m_barrageArray.Length; i++ )
+                        for (uint i = 0; i < m_barrageArray.Length; i++)
                         {
                             m_barrageArray[i].m_soundState = soundState;
                         }
@@ -796,6 +800,7 @@ namespace vGamePad
                         // ヒットした場合、GET_POINTERIDでポインターIDを保存する
                         if (m_crossArray[i].m_id == id)
                         {
+                            m_devCon.FreeCross(i);
                             m_crossArray[i].m_id = uint.MaxValue;
                             break;
                         }

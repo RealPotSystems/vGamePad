@@ -13,6 +13,25 @@ namespace vGamePad
 {
     public partial class InformationForm : Form
     {
+        public class PlayTime
+        {
+            public DateTime _StartTime {set; get;}
+            public DateTime _CheckTime {set; get;}
+            public PlayTime()
+            {
+            }
+            public string Initialize()
+            {
+                return "初期化中...";
+            }
+            public void Start()
+            {
+            }
+            public void Lap()
+            {
+            }
+        }
+
         static public InformationForm _Form = null;
 
 
@@ -109,7 +128,6 @@ namespace vGamePad
             this.label1.Text = CalcAstTime();
         }
 
-        //static int n = 0;
         private void timer2_Tick(object sender, EventArgs e)
         {
             float f = SystemInformation.PowerStatus.BatteryLifePercent;
@@ -124,22 +142,10 @@ namespace vGamePad
             if ((SystemInformation.PowerStatus.BatteryChargeStatus & BatteryChargeStatus.Charging) == BatteryChargeStatus.Charging)
             {
                 this.label2.Text += "充電中";
-                //for (int i = 0; i < n; i++)
-                //{
-                //    this.label2.Text += ".";
-                //}
-                //n++;
-                //if (n == 4)
-                //{
-                //    n = 0;
-                //}
-                _PlayTime = false;
-                
             }
             else if (SystemInformation.PowerStatus.PowerLineStatus == PowerLineStatus.Online && f == 1.00)
             {
                 this.label2.Text += "AC電源";
-                _PlayTime = false;
             }
             else
             {
@@ -180,31 +186,48 @@ namespace vGamePad
             //}
         }
 
-        private bool _PlayTime;
-        private float _StartBatteryLife = float.MinValue;
+        private PlayTime _PlayTime = new PlayTime();
+        private int _StartBatteryLife = int.MaxValue;
+        private int _CtrlBreakLife = int.MaxValue;
         private DateTime _StartTime = DateTime.MinValue;
         private bool _SetStartTime = false;
+        private string _str;
         private string CalcPlayTime()
         {
-            string str = "計測中";
-            if (_PlayTime == false && SystemInformation.PowerStatus.PowerLineStatus == PowerLineStatus.Offline )
+            int now = (int)(SystemInformation.PowerStatus.BatteryLifePercent*100);
+            if (SystemInformation.PowerStatus.PowerLineStatus == PowerLineStatus.Offline && _StartBatteryLife == int.MaxValue)
             {
-                _PlayTime = true;   // 計測開始
+                // イニシャライズ
                 // 初期値のバッテリー残量ほ保存し計測開始
-                _StartBatteryLife = SystemInformation.PowerStatus.BatteryLifePercent - 0.01f;
+                _StartBatteryLife = now - 1;
                 _SetStartTime = false;
 
+                _str = _PlayTime.Initialize();
+
+                return _str;
             }
-            if (_StartBatteryLife == SystemInformation.PowerStatus.BatteryLifePercent && !_SetStartTime)
+            if (_StartBatteryLife >= now && !_SetStartTime)
             {
+                // スタート
                 // 計測開始時間を保存する
                 _StartTime = DateTime.Now;
                 _SetStartTime = true;
+                _CtrlBreakLife = now - 1;
+                _str = "計測中...";
+                return _str;
             }
-            if (_SetStartTime)
+            if (_CtrlBreakLife >= now && _SetStartTime)
             {
+                // ラップタイム
+                TimeSpan ts = DateTime.Now - _StartTime;
+                int substract = _StartBatteryLife - now;    // これが母数
+                int seconds = (int)(ts.TotalSeconds / substract);   // 1%あたりの秒数
+                int playTime = (now - 9)*seconds;
+                _CtrlBreakLife = now - 1;
+                _str = string.Format("{0}/{1}", ts.TotalSeconds, substract);
+                return _str;
             }
-            return str;
+            return _str;
         }
 
         private void InformationForm_Load(object sender, EventArgs e)

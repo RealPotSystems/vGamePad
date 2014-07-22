@@ -162,6 +162,15 @@ namespace vGamePad
         public void PushCross(uint n)    // 0 ~ 3
         {
             joystick.SetDiscPov((Int32)n, rID, 1);
+//          joystick.SetDiscPov((Int32)Pov.NEUTRAL, rID, 1);
+        }
+
+        /// <summary>
+        /// 方向キーのフリー
+        /// </summary>
+        /// <param name="n">0:上 1:右 2:下 3:左</param>
+        public void FreeCross(uint n)
+        {
             joystick.SetDiscPov((Int32)Pov.NEUTRAL, rID, 1);
         }
 
