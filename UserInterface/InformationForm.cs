@@ -15,20 +15,113 @@ namespace vGamePad
     {
         public class PlayTime
         {
-            public DateTime _StartTime {set; get;}
-            public DateTime _CheckTime {set; get;}
+            /// <summary>
+            /// プレイ時間を表す文字列
+            /// </summary>
+            public string _PlayTimeString;
+
+            /// <summary>
+            /// 基準値となるバッテリー残量
+            /// </summary>
+            private int _StartBatteryLife;
+
+            /// <summary>
+            /// 基準値となる時刻
+            /// </summary>
+            private DateTime _StartTime;
+
+            /// <summary>
+            /// 計算するタイミングを管理する
+            /// </summary>
+            private int _CtrlBreakBatteryLife;
+
+            /// <summary>
+            /// プレイ基準時刻
+            /// </summary>
+            private DateTime _PlayTime;
+
+            /// <summary>
+            /// プレイ可能秒数
+            /// </summary>
+            private int _PlaySecond;
+
+            /// <summary>
+            /// コンストラクタ
+            /// </summary>
             public PlayTime()
             {
+                _PlayTimeString = "";
+                _StartBatteryLife = -1;
+                _StartTime = DateTime.MinValue;
+                _CtrlBreakBatteryLife = -1;
+                _PlaySecond = -1;
             }
-            public string Initialize()
+
+            public void Initialize()
             {
-                return "初期化中...";
+                _PlayTimeString = "";
+                _StartBatteryLife = -1;
+                _StartTime = DateTime.MinValue;
+                _CtrlBreakBatteryLife = -1;
+                _PlaySecond = -1;
             }
-            public void Start()
+
+            public void CalcPlayTime(double BatteryLifePercent)
             {
-            }
-            public void Lap()
-            {
+                // バッテリー残量が10%未満の場合、無条件で計算せず返却
+                if (BatteryLifePercent <= 0.100f)
+                {
+                    _PlayTimeString = "充電してください";
+                    return;
+                }
+
+                // バッテリーの残量を扱いやすいように1000倍しint型へ
+                int n = (int)(BatteryLifePercent * 1000);
+
+                // 初めてこのメソッドがコールされた時
+                if (_StartBatteryLife == -1)
+                {
+                    // 計測を開始する基準点を設定する
+                    _StartBatteryLife = n - 1;
+
+                    _PlayTimeString = "初期化中...";
+                    return;
+                }
+
+                // 最初に基準点になった時
+                if (_StartBatteryLife >= n && _CtrlBreakBatteryLife == -1)
+                {
+                    // 開始時刻を設定する
+                    _StartTime = DateTime.Now;
+
+                    // 次のチェック時間を設定する
+                    _CtrlBreakBatteryLife = n - 1;
+
+                    _PlayTimeString = "計算中...";
+                    return;
+                }
+
+                // 二回目以降の再計算
+                if (_CtrlBreakBatteryLife >= n)
+                {
+                    // 開始時刻との差を取得する
+                    _PlayTime = DateTime.Now;
+                    TimeSpan ts = _PlayTime - _StartTime;
+
+                    // 次のチェック時間を設定する
+                    _CtrlBreakBatteryLife = n - 1;
+
+                    // 0.1%減る秒数を求める
+                    int substract = _StartBatteryLife - n;    // これが母数
+                    double seconds = ts.TotalSeconds / substract;
+
+                    // バッテリーの残量からプレイ可能時間(秒)を作成する
+                    seconds = (n - 0.060f) * seconds;
+                    _PlaySecond = (int)seconds;
+
+                    ts = new TimeSpan(0, 0, _PlaySecond);
+                    _PlayTimeString = string.Format("残りプレイ時間 {0:00}時間{1:00}分", ts.Hours, ts.Minutes);
+                }
             }
         }
 
@@ -87,6 +180,10 @@ namespace vGamePad
             switch (e.Mode)
             {
                 case Microsoft.Win32.PowerModes.StatusChange:
+                    if (SystemInformation.PowerStatus.PowerLineStatus == PowerLineStatus.Online)
+                    {
+                        _PlayTime.Initialize();
+                    }
                     break;
             }
         }
@@ -187,47 +284,10 @@ namespace vGamePad
         }
 
         private PlayTime _PlayTime = new PlayTime();
-        private int _StartBatteryLife = int.MaxValue;
-        private int _CtrlBreakLife = int.MaxValue;
-        private DateTime _StartTime = DateTime.MinValue;
-        private bool _SetStartTime = false;
-        private string _str;
         private string CalcPlayTime()
         {
-            int now = (int)(SystemInformation.PowerStatus.BatteryLifePercent*100);
-            if (SystemInformation.PowerStatus.PowerLineStatus == PowerLineStatus.Offline && _StartBatteryLife == int.MaxValue)
-            {
-                // イニシャライズ
-                // 初期値のバッテリー残量ほ保存し計測開始
-                _StartBatteryLife = now - 1;
-                _SetStartTime = false;
-
-                _str = _PlayTime.Initialize();
-
-                return _str;
-            }
-            if (_StartBatteryLife >= now && !_SetStartTime)
-            {
-                // スタート
-                // 計測開始時間を保存する
-                _StartTime = DateTime.Now;
-                _SetStartTime = true;
-                _CtrlBreakLife = now - 1;
-                _str = "計測中...";
-                return _str;
-            }
-            if (_CtrlBreakLife >= now && _SetStartTime)
-            {
-                // ラップタイム
-                TimeSpan ts = DateTime.Now - _StartTime;
-                int substract = _StartBatteryLife - now;    // これが母数
-                int seconds = (int)(ts.TotalSeconds / substract);   // 1%あたりの秒数
-                int playTime = (now - 9)*seconds;
-                _CtrlBreakLife = now - 1;
-                _str = string.Format("{0}/{1}", ts.TotalSeconds, substract);
-                return _str;
-            }
-            return _str;
+            _PlayTime.CalcPlayTime(SystemInformation.PowerStatus.BatteryLifePercent);
+            return _PlayTime._PlayTimeString;
         }
 
         private void InformationForm_Load(object sender, EventArgs e)

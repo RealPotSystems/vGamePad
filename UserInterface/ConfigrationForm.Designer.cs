@@ -70,9 +70,9 @@
             this.label2.Font = new System.Drawing.Font("Meiryo UI", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.label2.Location = new System.Drawing.Point(62, 148);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(489, 26);
+            this.label2.Size = new System.Drawing.Size(384, 26);
             this.label2.TabIndex = 4;
-            this.label2.Text = "バッテリー残量を推定プレイ時間で表示する（実装中）";
+            this.label2.Text = "バッテリー残量を推定プレイ時間で表示する";
             // 
             // label3
             // 
