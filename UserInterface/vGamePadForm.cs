@@ -434,9 +434,8 @@ namespace vGamePad
             m_stickArray[1].m_image_on = Properties.Resources.stick_b_1;
 
             m_soundState = new vButton();
-            m_soundState.m_image_off = Properties.Resources.Sound_OFF;
-            m_soundState.m_image_on = Properties.Resources.Sound_ON;
-            m_soundState.m_soundState = true;
+            m_soundState.m_image_off = Properties.Resources.memo_1;
+            m_soundState.m_image_on = Properties.Resources.memo_2;
 
             m_softKeyboard = new vButton();
             m_softKeyboard.m_image_off = Properties.Resources.Keyboard;
@@ -687,16 +686,16 @@ namespace vGamePad
                     if (m_soundState.hitTest(pointer))
                     {
                         //bool soundState;
-                        //if (m_soundState.m_id == 1)
-                        //{
-                        //    m_soundState.m_id = uint.MaxValue;
+                        if (m_soundState.m_id == 1)
+                        {
+                            m_soundState.m_id = uint.MaxValue;
                         //    soundState = false;
-                        //}
-                        //else
-                        //{
-                        //    m_soundState.m_id = 1;
+                        }
+                        else
+                        {
+                            m_soundState.m_id = 1;
                         //    soundState = true;
-                        //}
+                        }
                         //for (uint i = 0; i < m_buttonArray.Length; i++)
                         //{
                         //    m_buttonArray[i].m_soundState = soundState;

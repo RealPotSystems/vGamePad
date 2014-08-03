@@ -48,7 +48,7 @@ namespace vGamePad
             // パスを設定して、右上のボタンだけにする
             m_path = new GraphicsPath();
             m_path.FillMode = FillMode.Winding;
-            m_path.AddRectangle(new Rectangle(this.Width - 26, 0, 26, 26));
+            m_path.AddRectangle(new Rectangle(this.Width - 42, 0, 36, 36));
             this.Region = new Region(m_path);
             this.SetPostion(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.WorkingArea.Top);
             SetButtonText();
