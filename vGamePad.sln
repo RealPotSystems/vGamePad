@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.21005.1
+VisualStudioVersion = 12.0.30501.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeviceControl", "DeviceControl\DeviceControl.csproj", "{99DF535C-EE49-4C9B-817C-B57A4F610782}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserInterface", "UserInterface\UserInterface.csproj", "{11410248-37D4-442D-991F-E3F35C7D0E83}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BalanceWiiBoardPad", "BalanceWiiBoardPad\BalanceWiiBoardPad.csproj", "{32EBC676-34F8-41E3-8499-C36EC7CB5329}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,9 @@ Global
 		{11410248-37D4-442D-991F-E3F35C7D0E83}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{11410248-37D4-442D-991F-E3F35C7D0E83}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{11410248-37D4-442D-991F-E3F35C7D0E83}.Release|Any CPU.Build.0 = Release|Any CPU
+		{32EBC676-34F8-41E3-8499-C36EC7CB5329}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{32EBC676-34F8-41E3-8499-C36EC7CB5329}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{32EBC676-34F8-41E3-8499-C36EC7CB5329}.Release|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

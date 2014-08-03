@@ -441,7 +441,6 @@ namespace vGamePad
             m_softKeyboard = new vButton();
             m_softKeyboard.m_image_off = Properties.Resources.Keyboard;
             m_softKeyboard.m_image_on = Properties.Resources.Keybord_ON;
-            m_softKeyboard.m_soundState = true;
 
             //m_dqxMove = new vButton();
             //m_dqxMove.m_image_off = Properties.Resources.DQX_0;
@@ -687,33 +686,33 @@ namespace vGamePad
                     // SoundON/OFFボタンの判定
                     if (m_soundState.hitTest(pointer))
                     {
-                        bool soundState;
-                        if (m_soundState.m_id == 1)
-                        {
-                            m_soundState.m_id = uint.MaxValue;
-                            soundState = false;
-                        }
-                        else
-                        {
-                            m_soundState.m_id = 1;
-                            soundState = true;
-                        }
-                        for (uint i = 0; i < m_buttonArray.Length; i++)
-                        {
-                            m_buttonArray[i].m_soundState = soundState;
-                        }
-                        for (uint i = 0; i < m_stickArray.Length; i++)
-                        {
-                            m_stickArray[i].m_soundState = soundState;
-                        }
-                        for (uint i = 0; i < m_barrageArray.Length; i++)
-                        {
-                            m_barrageArray[i].m_soundState = soundState;
-                        }
-                        for (uint i = 0; i < m_crossArray.Length; i++)
-                        {
-                            m_crossArray[i].m_soundState = soundState;
-                        }
+                        //bool soundState;
+                        //if (m_soundState.m_id == 1)
+                        //{
+                        //    m_soundState.m_id = uint.MaxValue;
+                        //    soundState = false;
+                        //}
+                        //else
+                        //{
+                        //    m_soundState.m_id = 1;
+                        //    soundState = true;
+                        //}
+                        //for (uint i = 0; i < m_buttonArray.Length; i++)
+                        //{
+                        //    m_buttonArray[i].m_soundState = soundState;
+                        //}
+                        //for (uint i = 0; i < m_stickArray.Length; i++)
+                        //{
+                        //    m_stickArray[i].m_soundState = soundState;
+                        //}
+                        //for (uint i = 0; i < m_barrageArray.Length; i++)
+                        //{
+                        //    m_barrageArray[i].m_soundState = soundState;
+                        //}
+                        //for (uint i = 0; i < m_crossArray.Length; i++)
+                        //{
+                        //    m_crossArray[i].m_soundState = soundState;
+                        //}
                     }
 
                     // キーボード起動
@@ -920,6 +919,27 @@ namespace vGamePad
             }
         }
 
+        public void SetSoundStatus(bool value)
+        {
+            for (uint i = 0; i < m_buttonArray.Length; i++)
+            {
+                m_buttonArray[i].m_soundState = value;
+            }
+            for (uint i = 0; i < m_stickArray.Length; i++)
+            {
+                m_stickArray[i].m_soundState = value;
+            }
+            for (uint i = 0; i < m_barrageArray.Length; i++)
+            {
+                m_barrageArray[i].m_soundState = value;
+            }
+            for (uint i = 0; i < m_crossArray.Length; i++)
+            {
+                m_crossArray[i].m_soundState = value;
+            }
+            m_softKeyboard.m_soundState = value;
+        }
+
         static public void ChangeSetting(string SettingName, bool value)
         {
             if (_Form != null)
@@ -928,42 +948,10 @@ namespace vGamePad
                 {
                     _Form.SetRegion(value);
                 }
-            }
-        }
-
-        [DllImport("user32.dll", SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool SetWindowPos(IntPtr hWnd,
-            int hWndInsertAfter, int x, int y, int cx, int cy, int uFlags);
-        private const int SWP_NOSIZE = 0x0001;
-        private const int SWP_NOMOVE = 0x0002;
-        private const int SWP_SHOWWINDOW = 0x0040;
-
-        private const int HWND_TOP = 0;
-        private const int HWND_TOPMOST = -1;
-        private const int HWND_NOTOPMOST = -2;
-
-        static public void SetDQXWindowPos()
-        {
-            
-            try
-            {
-                System.Diagnostics.Process[] ps = System.Diagnostics.Process.GetProcessesByName("DQXGame");   // ドラクエ10のプロセス名を指定する
-                if (ps.Length == 1)
+                else if ( SettingName == "Sound")
                 {
-                    ps[0].WaitForInputIdle();
-                    SetWindowPos(
-                        ps[0].MainWindowHandle,
-                        HWND_TOP,
-                        System.Windows.Forms.Screen.PrimaryScreen.WorkingArea.Left,
-                        System.Windows.Forms.Screen.PrimaryScreen.WorkingArea.Top,
-                        0,
-                        0,
-                        SWP_NOSIZE | SWP_SHOWWINDOW);
+                    _Form.SetSoundStatus(value);
                 }
-            }
-            catch
-            {
             }
         }
     }

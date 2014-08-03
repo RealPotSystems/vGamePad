@@ -38,6 +38,8 @@
             this._Region = new System.Windows.Forms.Label();
             this._Battery = new System.Windows.Forms.Label();
             this.S = new System.Windows.Forms.Label();
+            this.button1 = new System.Windows.Forms.Button();
+            this.button2 = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -45,11 +47,11 @@
             // 
             this.labelConfig.BackColor = System.Drawing.SystemColors.Control;
             this.labelConfig.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.labelConfig.Font = new System.Drawing.Font("Segoe UI Symbol", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelConfig.Location = new System.Drawing.Point(627, 2);
+            this.labelConfig.Font = new System.Drawing.Font("Segoe UI Symbol", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelConfig.Location = new System.Drawing.Point(452, 2);
             this.labelConfig.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.labelConfig.Name = "labelConfig";
-            this.labelConfig.Size = new System.Drawing.Size(25, 26);
+            this.labelConfig.Size = new System.Drawing.Size(40, 34);
             this.labelConfig.TabIndex = 0;
             this.labelConfig.Text = "";
             this.labelConfig.Click += new System.EventHandler(this.button1_Click);
@@ -150,11 +152,32 @@
             this.S.Text = "_";
             this.S.Click += new System.EventHandler(this.label7_Click);
             // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(406, 37);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(51, 46);
+            this.button1.TabIndex = 12;
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click_1);
+            // 
+            // button2
+            // 
+            this.button2.Image = global::vGamePad.Properties.Resources.DQX_0;
+            this.button2.Location = new System.Drawing.Point(23, 37);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(51, 46);
+            this.button2.TabIndex = 13;
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
             // ConfigrationForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(654, 330);
+            this.ClientSize = new System.Drawing.Size(497, 330);
+            this.Controls.Add(this.button2);
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.S);
             this.Controls.Add(this._Battery);
             this.Controls.Add(this._Region);
@@ -196,5 +219,7 @@
         private System.Windows.Forms.Label _Battery;
         private System.Windows.Forms.Label S;
         private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button button2;
     }
 }

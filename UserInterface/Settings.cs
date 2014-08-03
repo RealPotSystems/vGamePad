@@ -23,7 +23,7 @@
             {
                 InformationForm.ChangeSetting(e.SettingName , (bool)e.NewValue);
             }
-            if ( e.SettingName == "Skeleton")
+            if ( e.SettingName == "Skeleton" || e.SettingName == "Sound")
             {
                 vGamePadForm.ChangeSetting(e.SettingName, (bool)e.NewValue);
             }

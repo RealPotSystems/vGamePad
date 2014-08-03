@@ -8,6 +8,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Drawing.Drawing2D;
+using System.Threading;
+using System.Runtime.InteropServices;
 
 namespace vGamePad
 {
@@ -89,6 +91,14 @@ namespace vGamePad
                 this.S.Text = "\uE003";
             }
 
+            if (Properties.Settings.Default.Sound)
+            {
+                this.button1.Image = Properties.Resources.Sound_ON;
+            }
+            else
+            {
+                this.button1.Image = Properties.Resources.Sound_OFF;
+            }
 
         }
 
@@ -147,5 +157,62 @@ namespace vGamePad
                 Properties.Settings.Default.AstClock = true;
             }
         }
+
+        private void button1_Click_1(object sender, EventArgs e)
+        {
+            if (Properties.Settings.Default.Sound)
+            {
+                this.button1.Image = Properties.Resources.Sound_OFF;
+                Properties.Settings.Default.Sound = false;
+            }
+            else
+            {
+                this.button1.Image = Properties.Resources.Sound_ON;
+                Properties.Settings.Default.Sound = true;
+            }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            Thread thread = new Thread(new ThreadStart(SetDQXWindowPos));
+            thread.Start();
+        }
+
+        [DllImport("user32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool SetWindowPos(IntPtr hWnd,
+            int hWndInsertAfter, int x, int y, int cx, int cy, int uFlags);
+        private const int SWP_NOSIZE = 0x0001;
+        private const int SWP_NOMOVE = 0x0002;
+        private const int SWP_SHOWWINDOW = 0x0040;
+
+        private const int HWND_TOP = 0;
+        private const int HWND_TOPMOST = -1;
+        private const int HWND_NOTOPMOST = -2;
+
+        static public void SetDQXWindowPos()
+        {
+
+            try
+            {
+                System.Diagnostics.Process[] ps = System.Diagnostics.Process.GetProcessesByName("DQXGame");   // ドラクエ10のプロセス名を指定する
+                if (ps.Length == 1)
+                {
+                    ps[0].WaitForInputIdle();
+                    SetWindowPos(
+                        ps[0].MainWindowHandle,
+                        HWND_TOP,
+                        System.Windows.Forms.Screen.PrimaryScreen.WorkingArea.Left,
+                        System.Windows.Forms.Screen.PrimaryScreen.WorkingArea.Top,
+                        0,
+                        0,
+                        SWP_NOSIZE | SWP_SHOWWINDOW);
+                }
+            }
+            catch
+            {
+            }
+        }
+
     }
 }
