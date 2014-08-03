@@ -332,6 +332,7 @@ namespace vGamePad
         private vButton m_softKeyboard;
         //private vButton m_dqxMove;
         private string m_cmdLine = null;
+        private readonly string _memoCmd = "vGameMemo.exe";
 
         private DeviceControl m_devCon;
 
@@ -479,6 +480,15 @@ namespace vGamePad
             m_InfotmationForm = new InformationForm();
 
             _Form = this;
+            try
+            {
+                System.Diagnostics.Process hProc = null;
+                hProc = System.Diagnostics.Process.Start(_memoCmd);
+                hProc.Close();
+            }
+            catch
+            {
+            }
         }
 
         private void Button2_Click(object sender, EventArgs e)
@@ -495,6 +505,7 @@ namespace vGamePad
                     m_InfotmationForm.Close();
                 }
                 this.Close();
+                SendKeys.Send("+^%Q");
             }
         }
 
@@ -686,7 +697,7 @@ namespace vGamePad
                     if (m_soundState.hitTest(pointer))
                     {
                         m_soundState.m_id = GET_POINTERID_WPARAM(m.WParam);
-                        SendKeys.Send("F9");
+                        SendKeys.Send("+^%C");
                     }
 
                     // キーボード起動
@@ -716,15 +727,6 @@ namespace vGamePad
                         hProc = System.Diagnostics.Process.Start(m_cmdLine);
                         hProc.Close();
                     }
-
-                    // DQX移動調整ボタン
-                    //if (m_dqxMove.hitTest(pointer))
-                    //{
-                    //    m_dqxMove.m_id = GET_POINTERID_WPARAM(m.WParam);
-                    //    Thread thread = new Thread(new ThreadStart(SetDQXWindowPos));
-                    //    thread.Start();
-                    //}
-
                     this.Invalidate();
                     break;
                 //              case WM_LBUTTONUP:          // 本来は WM_POINTERUP メッセージを処理する
@@ -790,13 +792,6 @@ namespace vGamePad
                     {
                         m_softKeyboard.m_id = uint.MaxValue;
                     }
-
-                    // ドラクエ10画面移動結果
-                    //if (m_dqxMove.m_id == id)
-                    //{
-                    //    m_dqxMove.m_id = uint.MaxValue;
-                    //}
-
                     this.Invalidate();
                     break;
                 //              case WM_MOUSEMOVE:          // 本来は WM_POINTERUPDATE メッセージを処理する
@@ -869,9 +864,6 @@ namespace vGamePad
 
             // キーボードON
             m_softKeyboard.drawImage(e);
-
-            // ドラクエ10 画面調整
-            //m_dqxMove.drawImage(e);
         }
 
         protected override CreateParams CreateParams

@@ -33,7 +33,7 @@
     <Reference Include="System" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="vJoyInterfaceWrap">
-      <HintPath>..\..\..\..\Develop\vJoy\SDK\c#\x86\vJoyInterfaceWrap.dll</HintPath>
+      <HintPath>..\..\..\SDK\vJoy\vJoy204SDK-080714\c#\x86\vJoyInterfaceWrap.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
