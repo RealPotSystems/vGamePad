@@ -682,36 +682,11 @@ namespace vGamePad
                         }
                     }
 
-                    // SoundON/OFFボタンの判定
+                    // メモボタンの判定
                     if (m_soundState.hitTest(pointer))
                     {
-                        //bool soundState;
-                        if (m_soundState.m_id == 1)
-                        {
-                            m_soundState.m_id = uint.MaxValue;
-                        //    soundState = false;
-                        }
-                        else
-                        {
-                            m_soundState.m_id = 1;
-                        //    soundState = true;
-                        }
-                        //for (uint i = 0; i < m_buttonArray.Length; i++)
-                        //{
-                        //    m_buttonArray[i].m_soundState = soundState;
-                        //}
-                        //for (uint i = 0; i < m_stickArray.Length; i++)
-                        //{
-                        //    m_stickArray[i].m_soundState = soundState;
-                        //}
-                        //for (uint i = 0; i < m_barrageArray.Length; i++)
-                        //{
-                        //    m_barrageArray[i].m_soundState = soundState;
-                        //}
-                        //for (uint i = 0; i < m_crossArray.Length; i++)
-                        //{
-                        //    m_crossArray[i].m_soundState = soundState;
-                        //}
+                        m_soundState.m_id = GET_POINTERID_WPARAM(m.WParam);
+                        SendKeys.Send("F9");
                     }
 
                     // キーボード起動
@@ -802,6 +777,12 @@ namespace vGamePad
                             m_crossArray[i].m_id = uint.MaxValue;
                             break;
                         }
+                    }
+
+                    // メモボタン
+                    if (m_soundState.m_id == id)
+                    {
+                        m_soundState.m_id = uint.MaxValue;
                     }
 
                     // キーボード起動
