@@ -354,7 +354,6 @@ namespace vGamePad
             InitializeComponent();
             this.Width = System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width;
             int baseWidth = this.ClientSize.Width; // 786
-
             m_devCon = devCon;
             m_cmdLine = Environment.ExpandEnvironmentVariables("%ProgramFiles%") + "\\Common Files\\microsoft shared\\ink\\TabTip.exe";
 
@@ -441,11 +440,6 @@ namespace vGamePad
             m_softKeyboard = new vButton();
             m_softKeyboard.m_image_off = Properties.Resources.Keyboard;
             m_softKeyboard.m_image_on = Properties.Resources.Keybord_ON;
-
-            //m_dqxMove = new vButton();
-            //m_dqxMove.m_image_off = Properties.Resources.DQX_0;
-            //m_dqxMove.m_image_on = Properties.Resources.DQX_1;
-            //m_dqxMove.m_soundState = true;
 
             m_devCon.MoveStick(0, 50, 50);
             m_devCon.MoveStick(1, 50, 50);
